@@ -3,7 +3,7 @@
 
 	<groupId>com.github.pbilstein.infrastructure-mocks</groupId>
 	<artifactId>soap-mocks-lib</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.3</version>
 	<packaging>jar</packaging>
 	<name>com.github.pbilstein.infrastructuremocks:soap-mocks-lib</name>
 	<description>A library that can be used to mockup SOAP services and record proxy requests to other servers.</description>
@@ -90,6 +90,19 @@
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 					<autoReleaseAfterClose>false</autoReleaseAfterClose>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
