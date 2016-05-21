@@ -109,19 +109,19 @@ public final class Response {
      *            object
      * @param defaultResponse
      *            TRUE when a default response shall be searched for
-     * @param identifier
-     *            Identifier to find matching response
+     * @param requestIdentifier
+     *            {@link RequestIdentifier} to find matching response
      * @return Object to return in WebService
      */
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
 	    Class<RESPONSE_TYPE> classForResponseType, String responseTypeElement,
-	    DefaultResponse defaultResponse, RequestIdentifier identifier) {
-	ProxyDelegator.serviceIdentifier(identifier.getMethod(),
-		identifier.getParameters());
+	    DefaultResponse defaultResponse, RequestIdentifier requestIdentifier) {
+	ProxyDelegator.serviceIdentifier(requestIdentifier.getMethod(),
+		requestIdentifier.getParameters());
 	String filename = new ResponseCreatorFileFinder()
 		.findFileFromMethodsAndParameter(responseFile.baseDir(),
-			defaultResponse, identifier.getMethod(),
-			identifier.getParameters());
+			defaultResponse, requestIdentifier.getMethod(),
+			requestIdentifier.getParameters());
 	if (filename == null) {
 	    throw new ProxyDelegateQuietException("No response file found");
 	}

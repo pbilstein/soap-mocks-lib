@@ -32,14 +32,16 @@ public final class RequestIdentifier {
     }
 
     /**
-     * @param method
+     * @param webserviceMethod
      *            The method of the webservice
      * @param parameters
-     *            Parameter strings from request to identify matching response
+     *            Parameter strings from request to identify unique request to a
+     *            matching response
      * @return Identifier object
      */
-    public static RequestIdentifier with(String method, String parameters) {
-	return new RequestIdentifier(method, parameters);
+    public static RequestIdentifier with(String webserviceMethod,
+	    String parameters) {
+	return new RequestIdentifier(webserviceMethod, parameters);
     }
 
     public String getMethod() {
