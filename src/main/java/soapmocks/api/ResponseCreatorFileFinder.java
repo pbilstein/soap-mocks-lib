@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 final class ResponseCreatorFileFinder {
 
-    String findFileFromMethodsAndParameter(String basedir, boolean defaultXml,
+    String findFileFromMethodsAndParameter(String basedir, DefaultResponse defaultResponse,
 	    String method, String... parameters) {
 	String filename = "/" + method;
 	for (String parameter : parameters) {
@@ -32,7 +32,7 @@ final class ResponseCreatorFileFinder {
 	InputStream fileInputStream = getFile(basedir + filename);
 
 	if (fileInputStream == null) {
-	    if (defaultXml) {
+	    if (DefaultResponse.TRUE == defaultResponse) {
 		filename = "/" + method + "-default.xml";
 	    } else {
 		throw new ProxyDelegateQuietException(filename + " not found");

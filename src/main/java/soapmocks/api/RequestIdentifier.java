@@ -21,12 +21,12 @@ package soapmocks.api;
  * Identifier.with("doSomething", "blah", "suelz"); will try to find a file
  * named doSomething-blah-suelz.xml
  */
-public final class Identifier {
+public final class RequestIdentifier {
 
     private final String method;
     private final String[] parameters;
 
-    private Identifier(String method, String... parameters) {
+    private RequestIdentifier(String method, String... parameters) {
 	this.method = method;
 	this.parameters = parameters;
     }
@@ -38,8 +38,8 @@ public final class Identifier {
      *            Parameter strings from request to identify matching response
      * @return Identifier object
      */
-    public static Identifier with(String method, String parameters) {
-	return new Identifier(method, parameters);
+    public static RequestIdentifier with(String method, String parameters) {
+	return new RequestIdentifier(method, parameters);
     }
 
     public String getMethod() {

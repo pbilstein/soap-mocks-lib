@@ -38,7 +38,7 @@ public final class ProxyDelegator {
 
     /**
      * This enables the proxy delegation, if a proxy is available for the URI.
-     * In addition it sets the service identifier used by Proxy Records.
+     * In addition it sets the service identifier used by proxy records.
      *
      * @param method The webservice method being called.
      * @param parameters parameters that identify a unique request.
