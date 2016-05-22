@@ -33,6 +33,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 
 import soapmocks.api.Constants;
 import soapmocks.generic.listener.SoapMocksStartup;
+import soapmocks.generic.servlet.ContextPath;
 
 public final class StaticFileConfig {
 

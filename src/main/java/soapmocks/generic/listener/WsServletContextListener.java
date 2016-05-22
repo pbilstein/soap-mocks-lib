@@ -25,18 +25,18 @@ import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import soapmocks.api.Constants;
+import soapmocks.generic.StaticFileConfig;
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
+import soapmocks.generic.proxy.ProxyRecordConfig;
+import soapmocks.generic.servlet.ContextPath;
+
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import com.sun.xml.ws.transport.http.servlet.WSServlet;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
-
-import soapmocks.api.Constants;
-import soapmocks.generic.ContextPath;
-import soapmocks.generic.StaticFileConfig;
-import soapmocks.generic.logging.Log;
-import soapmocks.generic.logging.LogFactory;
-import soapmocks.generic.proxy.ProxyRecordConfig;
 
 public class WsServletContextListener implements ServletContextListener, ServletContextAttributeListener {
 

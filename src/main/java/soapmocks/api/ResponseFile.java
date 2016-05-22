@@ -30,7 +30,8 @@ import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
 
 /**
- * An API class to create JaxWS response objects from XML files identified by the filename.
+ * An API class to create JaxWS response objects from XML files identified by
+ * the filename.
  */
 public class ResponseFile {
 
@@ -53,50 +54,54 @@ public class ResponseFile {
     public ResponseFile(String baseDir) {
 	this.baseDir = baseDir;
     }
-    
+
     /**
-     * Will create a response object using the xml file (the SOAP response).
-     * As base element the RESPONSE_TYPE will be used with the first char to lower-case.
+     * Will create a response object using the xml file (the SOAP response). As
+     * base element the RESPONSE_TYPE will be used with the first char to
+     * lower-case.
      * 
-     * @param xmlfile is the filename of the response to be used.
+     * @param xmlfile
+     *            is the filename of the response to be used.
      * @param classForResponseType
      * @return RESPONSE_TYPE object instance
      */
-    public <RESPONSE_TYPE> RESPONSE_TYPE using(String xmlfile,
-	    Class<RESPONSE_TYPE> classForResponseType) {
+    public <RESPONSE_TYPE> RESPONSE_TYPE using(String xmlfile, Class<RESPONSE_TYPE> classForResponseType) {
 	return using(xmlfile, null, classForResponseType);
     }
 
     /**
-     * Will create a response object using the xml file (the SOAP response).
-     * As base element the RESPONSE_TYPE will be used with the first char to lower-case.
+     * Will create a response object using the xml file (the SOAP response). As
+     * base element the RESPONSE_TYPE will be used with the first char to
+     * lower-case.
      * 
-     * @param xmlfile is the filename of the response to be used.
-     * @param responseTypeElement
+     * @param xmlfile
+     *            is the filename of the response to be used.
+     * @param responseIdentifier
      * @param classForResponseType
      * @return RESPONSE_TYPE object instance
      */
-    public <RESPONSE_TYPE> RESPONSE_TYPE using(String xmlfile,
-	    String responseTypeElement, Class<RESPONSE_TYPE> classForResponseType) {
-	if (responseTypeElement == null) {
+    public <RESPONSE_TYPE> RESPONSE_TYPE using(String xmlfile, ResponseIdentifier responseIdentifierObject,
+	    Class<RESPONSE_TYPE> classForResponseType) {
+	String responseIdentifier = null;
+	if (responseIdentifierObject == null || responseIdentifierObject.getElementResponse() == null) {
 	    String simpleName = classForResponseType.getSimpleName();
-	    responseTypeElement = Character.toLowerCase(simpleName.charAt(0))
+	    responseIdentifier = Character.toLowerCase(simpleName.charAt(0))
 		    + (simpleName.length() > 1 ? simpleName.substring(1) : "");
+	} else {
+	    responseIdentifier = responseIdentifierObject.getElementResponse();
 	}
 	try {
 	    xmlfile = baseDir + xmlfile;
 	    XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-	    InputStream fileInputStream = new ResponseCreatorFileFinder()
-		    .getFile(xmlfile);
+	    InputStream fileInputStream = new ResponseCreatorFileFinder().getFile(xmlfile);
 	    failIfStreamNotFound(xmlfile, fileInputStream);
 	    StreamSource streamSource = new StreamSource(fileInputStream);
 	    XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(streamSource);
-	    boolean found = iterateXmlStreamToElement(responseTypeElement, xmlStreamReader);
-	    throwExceptionIfNotFound(xmlfile, responseTypeElement, found);
+	    boolean found = iterateXmlStreamToElement(responseIdentifier, xmlStreamReader);
+	    throwExceptionIfNotFound(xmlfile, responseIdentifier, found);
 	    JAXBContext jc = JAXBContext.newInstance(classForResponseType);
 	    Unmarshaller unmarshaller = jc.createUnmarshaller();
-	    JAXBElement<RESPONSE_TYPE> jaxbElement = unmarshaller.unmarshal(
-		    xmlStreamReader, classForResponseType);
+	    JAXBElement<RESPONSE_TYPE> jaxbElement = unmarshaller.unmarshal(xmlStreamReader, classForResponseType);
 	    xmlStreamReader.close();
 	    fileInputStream.close();
 	    LOG.out("JaxWS ResponseFile: " + xmlfile);
@@ -107,34 +112,29 @@ public class ResponseFile {
 	}
     }
 
-    private boolean iterateXmlStreamToElement(String fromElement, XMLStreamReader xsr)
-	    throws XMLStreamException {
+    private boolean iterateXmlStreamToElement(String fromElement, XMLStreamReader xsr) throws XMLStreamException {
 	boolean found = false;
 	while (xsr.hasNext()) {
-	xsr.next();
-	if (xsr.isStartElement()
-		&& xsr.getLocalName().equals(fromElement)) {
-	    found = true;
-	    break;
-	}
+	    xsr.next();
+	    if (xsr.isStartElement() && xsr.getLocalName().equals(fromElement)) {
+		found = true;
+		break;
+	    }
 	}
 	return found;
     }
-    
+
     protected String baseDir() {
 	return baseDir;
     }
 
-    private void throwExceptionIfNotFound(String xmlfile, String fromElement,
-	    boolean found) {
+    private void throwExceptionIfNotFound(String xmlfile, String fromElement, boolean found) {
 	if (!found) {
-	    throw new ProxyDelegateQuietException(fromElement
-		    + " element not found in " + xmlfile);
+	    throw new ProxyDelegateQuietException(fromElement + " element not found in " + xmlfile);
 	}
     }
 
-    private void failIfStreamNotFound(String file, InputStream fileInputStream)
-	    throws FileNotFoundException {
+    private void failIfStreamNotFound(String file, InputStream fileInputStream) throws FileNotFoundException {
 	if (fileInputStream == null) {
 	    throw new ProxyDelegateQuietException(file + " not found.");
 	}

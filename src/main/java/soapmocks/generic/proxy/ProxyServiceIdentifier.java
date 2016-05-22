@@ -16,15 +16,19 @@ limitations under the License.
 package soapmocks.generic.proxy;
 
 import soapmocks.api.RequestIdentifier;
+import soapmocks.api.ResponseIdentifier;
 
 public final class ProxyServiceIdentifier {
 
     private final RequestIdentifier requestIdentifier;
+    private final ResponseIdentifier responseIdentifier;
 
-    public ProxyServiceIdentifier(RequestIdentifier requestIdentifier) {
+    public ProxyServiceIdentifier(RequestIdentifier requestIdentifier,
+	    ResponseIdentifier responseIdentifier) {
 	this.requestIdentifier = requestIdentifier;
+	this.responseIdentifier = responseIdentifier;
     }
-    
+
     String[] getParameters() {
 	return requestIdentifier.getParameters();
     }
@@ -32,11 +36,11 @@ public final class ProxyServiceIdentifier {
     String getMethod() {
 	return requestIdentifier.getMethod();
     }
-    
+
     String generateFilename() {
 	return generateFilename(null);
     }
-    
+
     String generateFilename(String hash) {
 	StringBuilder filename = new StringBuilder();
 	filename.append(requestIdentifier.getMethod());
@@ -48,8 +52,12 @@ public final class ProxyServiceIdentifier {
     }
 
     private void addHashIfNotNull(String hash, StringBuilder filename) {
-	if(hash!=null) {
+	if (hash != null) {
 	    filename.append(".resp-" + hash);
 	}
+    }
+
+    ResponseIdentifier getResponseIdentifier() {
+	return responseIdentifier;
     }
 }

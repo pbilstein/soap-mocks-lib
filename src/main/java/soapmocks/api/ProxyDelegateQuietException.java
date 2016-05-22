@@ -30,8 +30,7 @@ import soapmocks.generic.logging.LogFactory;
 // ProtocolException because it is logged as debug in jaxws-rt
 public final class ProxyDelegateQuietException extends ProtocolException {
 
-    private static final Log LOG = LogFactory
-	    .create(ProxyDelegateQuietException.class);
+    private static final Log LOG = LogFactory.create(ProxyDelegateQuietException.class);
 
     private static final long serialVersionUID = 1L;
 

@@ -15,12 +15,13 @@ limitations under the License.
  */
 package soapmocks.generic.listener;
 
-import com.sun.xml.ws.transport.http.ResourceLoader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.Set;
+
+import com.sun.xml.ws.transport.http.ResourceLoader;
 
 final class ServletResourceLoader implements ResourceLoader {
 

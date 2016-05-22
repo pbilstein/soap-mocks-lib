@@ -29,19 +29,19 @@ public final class Log {
     public void out(String message) {
 	logger.info(message);
     }
-    
+
     public void info(String message) {
 	logger.info(message);
     }
-    
+
     public void debug(String message) {
 	logger.debug(message);
     }
-    
+
     public void error(Throwable t, String message) {
 	logger.error(message, t);
     }
-    
+
     public void error(Throwable t) {
 	logger.error(t.getMessage(), t);
     }

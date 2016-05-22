@@ -51,7 +51,7 @@ final class ProxyRecordHandler {
 
     private void addHashedFile(ProxyResult proxyResult,
 	    ProxyServiceIdentifier serviceIdentifier) throws IOException {
-	String hash = new Filehasing().hash(proxyResult.bodyDeflated);
+	String hash = new Filehasing().hash(proxyResult.bodyDeflated, serviceIdentifier.getResponseIdentifier());
 	String pathnameWithHash = ProxyRecordConfig.getProxyTraceAbsoluteDir()
 		+ serviceIdentifier.generateFilename(hash);
 	File fileWithHash = new File(pathnameWithHash);

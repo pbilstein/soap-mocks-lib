@@ -53,10 +53,11 @@ public final class Response {
      * <p>
      * 
      * @param classForResponseType
-     *            The type of the response object
+     *            The type of the response object.
      * @param requestIdentifier
-     *            {@link RequestIdentifier} to find matching response
-     * @return RESPONSE_TYPE Object to return in WebService
+     *            {@link RequestIdentifier} to identify a request and find its
+     *            matching response.
+     * @return RESPONSE_TYPE Object to return in WebService.
      */
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
 	    Class<RESPONSE_TYPE> classForResponseType,
@@ -76,18 +77,21 @@ public final class Response {
      * <p>
      * 
      * @param classForResponseType
-     *            The type of the response object
-     * @param responseTypeElement
+     *            The type of the response object.
+     * @param responseIdentifier
      *            The element in the response file representing the response
-     *            object
+     *            object and more information in response for proxy and object
+     *            creation.
      * @param requestIdentifier
-     *            {@link RequestIdentifier} to find matching response
-     * @return Object to return in WebService
+     *            {@link RequestIdentifier} to identify a request and find its
+     *            matching response.
+     * @return Object to return in WebService.
      */
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
 	    Class<RESPONSE_TYPE> classForResponseType,
-	    String responseTypeElement, RequestIdentifier requestIdentifier) {
-	return using(classForResponseType, responseTypeElement,
+	    ResponseIdentifier responseIdentifier,
+	    RequestIdentifier requestIdentifier) {
+	return using(classForResponseType, responseIdentifier,
 		DefaultResponse.TRUE, requestIdentifier);
     }
 
@@ -103,28 +107,29 @@ public final class Response {
      * <p>
      * 
      * @param classForResponseType
-     *            The type of the response object
-     * @param responseTypeElement
+     *            The type of the response object.
+     * @param responseIdentifier
      *            The element in the response file representing the response
-     *            object
+     *            object and more information in response.
      * @param defaultResponse
-     *            TRUE when a default response shall be searched for
+     *            TRUE when a default response shall be searched for.
      * @param requestIdentifier
-     *            {@link RequestIdentifier} to find matching response
-     * @return Object to return in WebService
+     *            {@link RequestIdentifier} to identify a request and find its
+     *            matching response.
+     * @return Object to return in WebService.
      */
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
 	    Class<RESPONSE_TYPE> classForResponseType,
-	    String responseTypeElement, DefaultResponse defaultResponse,
-	    RequestIdentifier requestIdentifier) {
-	ProxyDelegator.serviceIdentifier(requestIdentifier);
+	    ResponseIdentifier responseIdentifier,
+	    DefaultResponse defaultResponse, RequestIdentifier requestIdentifier) {
+	ProxyDelegator.serviceIdentifier(requestIdentifier, responseIdentifier);
 	String filename = new ResponseCreatorFileFinder()
 		.findFileFromMethodsAndParameter(responseFile.baseDir(),
 			defaultResponse, requestIdentifier);
 	if (filename == null) {
 	    throw new ProxyDelegateQuietException("No response file found");
 	}
-	return responseFile.using(filename, responseTypeElement,
+	return responseFile.using(filename, responseIdentifier,
 		classForResponseType);
     }
 

@@ -13,22 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package soapmocks;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+package soapmocks.generic.servlet;
 
 import javax.servlet.annotation.WebServlet;
 
-import soapmocks.generic.SoapMock;
+import soapmocks.generic.ShutdownMock;
 
-@WebServlet(loadOnStartup=1, urlPatterns="/*")
-public class Servlet extends SoapMock {
+@WebServlet(loadOnStartup=1, value="/shutdown")
+public class ShutdownServlet extends ShutdownMock {
 
     private static final long serialVersionUID = 1L;
-
-    public Servlet() throws IOException, URISyntaxException {
-	super();
-    }
 
 }

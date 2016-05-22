@@ -13,16 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package soapmocks;
+package soapmocks.generic.servlet;
 
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+public class ContextPath {
 
-import soapmocks.generic.listener.WsServletContextListener;
-
-@WebListener
-public class ContextListener extends WsServletContextListener implements ServletContextListener, ServletContextAttributeListener {
-
+    public static String SOAP_MOCKS_CONTEXT = "";  
+    
 }
-

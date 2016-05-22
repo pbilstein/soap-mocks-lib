@@ -22,9 +22,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import soapmocks.api.Constants;
-import soapmocks.generic.ContextPath;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
+import soapmocks.generic.servlet.ContextPath;
 
 final class ProxyUrl {
     

@@ -26,11 +26,9 @@ import soapmocks.generic.logging.LogFactory;
 
 final class ResponseCreatorFileFinder {
 
-    private static final Log LOG = LogFactory
-	    .create(ResponseCreatorFileFinder.class);
+    private static final Log LOG = LogFactory.create(ResponseCreatorFileFinder.class);
 
-    String findFileFromMethodsAndParameter(String basedir,
-	    DefaultResponse defaultResponse,
+    String findFileFromMethodsAndParameter(String basedir, DefaultResponse defaultResponse,
 	    RequestIdentifier requestIdentifier) {
 	final String method = requestIdentifier.getMethod();
 	final String[] parameters = requestIdentifier.getParameters();
@@ -58,8 +56,7 @@ final class ResponseCreatorFileFinder {
     }
 
     InputStream getFile(String filename) {
-	String basedir = System
-		.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
+	String basedir = System.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
 	if (basedir != null) {
 	    String absoluteFilename = basedir + filename;
 	    File file = new File(absoluteFilename);
@@ -81,8 +78,7 @@ final class ResponseCreatorFileFinder {
 	}
     }
 
-    private void closeFileOrFailIfNotFound(String filename,
-	    InputStream fileInputStream) {
+    private void closeFileOrFailIfNotFound(String filename, InputStream fileInputStream) {
 	if (fileInputStream == null) {
 	    throw new ProxyDelegateQuietException(filename + " not found");
 	} else {

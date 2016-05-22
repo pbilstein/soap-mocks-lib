@@ -38,9 +38,8 @@ public final class ProxyDelegator {
      * This enables the proxy delegation, if a proxy is available for the URI.
      * In addition it sets the service identifier used by proxy records.
      *
-     * @param {@link
-     * 	   RequestIdentifier} to identify a service request by method and
-     *            some parameters.
+     * @param {@link RequestIdentifier} to identify a service request by method
+     *        and some parameters.
      */
     public static void toProxy(RequestIdentifier requestIdentifier) {
 	serviceIdentifier(requestIdentifier);
@@ -48,16 +47,43 @@ public final class ProxyDelegator {
     }
 
     /**
+     * This enables the proxy delegation, if a proxy is available for the URI.
+     * In addition it sets the service identifier used by proxy records.
+     * ResponseIdentifier can be used to set response element excludes on hash
+     * creation.
+     *
+     * @param {@link RequestIdentifier} to identify a service request by method
+     *        and some parameters.
+     * @param {@link ResponseIdentifier} responseIdentifier to be used for
+     *        element excludes on hash creation.
+     */
+    public static void toProxy(RequestIdentifier requestIdentifier, ResponseIdentifier responseIdentifier) {
+	serviceIdentifier(requestIdentifier, responseIdentifier);
+	toProxy();
+    }
+
+    /**
      * Sets the service identifier used by proxy records.
      * 
-     * @param {@link
-     * 	   RequestIdentifier} to identify a service request by method and
-     *            some parameters.
+     * @param {@link RequestIdentifier} to identify a service request by method
+     *        and some parameters.
+     * @param responseIdentifier
+     *            to identify elements in response hash creation and response
+     *            object creation
+     */
+    public static void serviceIdentifier(RequestIdentifier requestIdentifier, ResponseIdentifier responseIdentifier) {
+	SERVICE_IDENTIFIER.set(new ProxyServiceIdentifier(requestIdentifier, responseIdentifier));
+	HAS_SERVICE_IDENTIFIER.set(true);
+    }
+
+    /**
+     * Sets the service identifier used by proxy records.
+     * 
+     * @param {@link RequestIdentifier} to identify a service request by method
+     *        and some parameters.
      */
     public static void serviceIdentifier(RequestIdentifier requestIdentifier) {
-	SERVICE_IDENTIFIER
-		.set(new ProxyServiceIdentifier(requestIdentifier));
-	HAS_SERVICE_IDENTIFIER.set(true);
+	serviceIdentifier(requestIdentifier, null);
     }
 
     /**

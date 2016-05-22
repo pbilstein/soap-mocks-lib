@@ -20,10 +20,13 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
+import soapmocks.api.ResponseIdentifier;
+
 public class FilehashingTest {
 
     Filehasing filehashing = new Filehasing();
     String xml1 = "<xml><data>blah</data></xml>";
+    String xml1WithSession = "<xml><data>blah</data><session>uiii</session></xml>";
     String xml2 = "<xml><data>blah2</data></xml>";
     String xml3Like1ButFormatted = "<xml>\n\r<data>\n\rblah</data></xml>";
     
@@ -32,6 +35,8 @@ public class FilehashingTest {
     
     String hashResult1;
     String hashResult2;
+    
+    String[] excludes;
     
     @Test
     public void assureThatSimpleHashSameWorks() {
@@ -63,13 +68,20 @@ public class FilehashingTest {
 	runHashing();
 	assertEquals(hashResult1, hashResult2);
     }
+    
+    @Test
+    public void assureThatExcludeElementWorks() {
+	firstXml = xml1.getBytes();
+	secondXml = xml1WithSession.getBytes();
+	excludes = new String[]{"session"};
+	runHashing();
+	assertEquals(hashResult1, hashResult2);
+    }
 
     private void runHashing() {
-	hashResult1 = filehashing.hash(firstXml);
-	System.out.println(hashResult1);
+	hashResult1 = filehashing.hash(firstXml, ResponseIdentifier.with().elementExcludes(excludes).build());
 	if(secondXml!=null) {
-	    hashResult2 = filehashing.hash(secondXml);
-	    System.out.println(hashResult2);
+	    hashResult2 = filehashing.hash(secondXml, ResponseIdentifier.with().elementExcludes(excludes).build());
 	}
     }
 }
