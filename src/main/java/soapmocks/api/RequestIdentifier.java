@@ -15,11 +15,13 @@ limitations under the License.
  */
 package soapmocks.api;
 
+import soapmocks.generic.FindWebServiceMethod;
+
 /**
- * An object to identify a service request by method and some parameters. This
- * identifier will generate a filename by given parameters. Example:
- * Identifier.with("doSomething", "blah", "suelz"); will try to find a file
- * named doSomething-blah-suelz.xml
+ * An object to identify a service request by WebService calling method and some
+ * parameters. This identifier will generate a filename by given parameters.
+ * Example: Webservice method 'doSomething' and Identifier.with("blah",
+ * "suelz"); will try to find a file named doSomething-blah-suelz.xml
  */
 public final class RequestIdentifier {
 
@@ -32,16 +34,34 @@ public final class RequestIdentifier {
     }
 
     /**
-     * @param webserviceMethod
-     *            The method of the webservice
+     * Identify the request by parameters from payload. The webservice method
+     * will be retrieved automatically via stacktrace finding the calling class
+     * with Webservice annotation.
+     * <p>
+     * 
      * @param parameters
      *            Parameter strings from request to identify unique request to a
      *            matching response
      * @return Identifier object
      */
-    public static RequestIdentifier with(String webserviceMethod,
-	    String... parameters) {
-	return new RequestIdentifier(webserviceMethod, parameters);
+    public static RequestIdentifier by(String... parameters) {
+	return new RequestIdentifier(FindWebServiceMethod.get(), parameters);
+    }
+
+    /**
+     * Identify the request by parameters from payload. The webservice method is
+     * set manually.
+     * <p>
+     * 
+     * @param method
+     *            The calling webservice method so identify a response file.
+     * @param parameters
+     *            Parameter strings from request to identify unique request to a
+     *            matching response
+     * @return Identifier object
+     */
+    public static RequestIdentifier byManualMethod(String method, String... parameters) {
+	return new RequestIdentifier(method, parameters);
     }
 
     public String getMethod() {

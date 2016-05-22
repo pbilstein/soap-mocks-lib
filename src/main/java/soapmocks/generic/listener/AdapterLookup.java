@@ -18,6 +18,7 @@ package soapmocks.generic.listener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,8 @@ import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.ResourceLoader;
 
 final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
+
+    private static final String SOAPMOCKS_SERVICES = "soapmocks.services";
 
     private String SUN_JAXWS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 	    + "<endpoints xmlns=\"http://java.sun.com/xml/ns/jax-ws/ri/runtime\" " + "version=\"2.0\">\n"
@@ -45,7 +48,7 @@ final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
 
     @Override
     public List<A> parse(String systemId, InputStream is) {
-	Reflections reflections = new Reflections("soapmocks.services");
+	Reflections reflections = new Reflections(SOAPMOCKS_SERVICES);
 	Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(WebService.class);
 	StringBuilder endpointString = new StringBuilder();
 	String sunJaxWs = findServicesAndCreateSytheticSunJaxWsXml(annotated, endpointString);
@@ -53,18 +56,30 @@ final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
     }
 
     private String findServicesAndCreateSytheticSunJaxWsXml(Set<Class<?>> annotated, StringBuilder endpointString) {
+	Set<String> urls = new HashSet<>();
 	for (Class<?> serviceClass : annotated) {
 	    String urlPattern = serviceClass.getAnnotation(WebService.class).serviceName();
 	    Service service = new Service();
 	    service.implementation = serviceClass.getName();
 	    service.urlPattern = urlPattern;
 	    service.name = serviceClass.getSimpleName();
+	    checkService(urls, service);
 	    endpointString.append(SUN_JAXWS_XML_ENDPOINT_TEMPLATE.replaceAll("--NAME--", service.name)
 		    .replaceAll("--IMPL--", service.implementation).replaceAll("--URLPATTERN--", service.urlPattern))
 		    .append("\n");
 	}
 	String sunJaxws = SUN_JAXWS_XML.replaceAll("--ENDPOINTS--", endpointString.toString());
 	return sunJaxws;
+    }
+
+    private void checkService(Set<String> urls, Service service) {
+	if(service.urlPattern == null || service.urlPattern.isEmpty()) {
+	    throw new RuntimeException("The service with name " + service.name + " has no url pattern (@WebService.serviceName)");
+	}
+	if(urls.contains(service.urlPattern)) {
+	    throw new RuntimeException("The service with name " + service.name + " has an url pattern (@WebService.serviceName='"+service.urlPattern+"') that was already used in another Class annotated with @Webservice");
+	}
+	urls.add(service.urlPattern);
     }
 
     private static final class Service {
