@@ -40,7 +40,7 @@ public final class RequestIdentifier {
      * @return Identifier object
      */
     public static RequestIdentifier with(String webserviceMethod,
-	    String parameters) {
+	    String... parameters) {
 	return new RequestIdentifier(webserviceMethod, parameters);
     }
 

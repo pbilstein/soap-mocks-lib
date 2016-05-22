@@ -15,15 +15,25 @@ limitations under the License.
  */
 package soapmocks.api;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
+
 final class ResponseCreatorFileFinder {
 
-    String findFileFromMethodsAndParameter(String basedir, DefaultResponse defaultResponse,
-	    String method, String... parameters) {
+    private static final Log LOG = LogFactory
+	    .create(ResponseCreatorFileFinder.class);
+
+    String findFileFromMethodsAndParameter(String basedir,
+	    DefaultResponse defaultResponse,
+	    RequestIdentifier requestIdentifier) {
+	final String method = requestIdentifier.getMethod();
+	final String[] parameters = requestIdentifier.getParameters();
 	String filename = "/" + method;
 	for (String parameter : parameters) {
 	    filename += "-" + parameter;
@@ -48,19 +58,31 @@ final class ResponseCreatorFileFinder {
     }
 
     InputStream getFile(String filename) {
-	String basedir = System.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
-	if(basedir!=null) {
-	    try {
-		return new FileInputStream(basedir + filename);
-	    } catch (FileNotFoundException e) {
-		System.out.println(e.getMessage());
+	String basedir = System
+		.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
+	if (basedir != null) {
+	    String absoluteFilename = basedir + filename;
+	    File file = new File(absoluteFilename);
+	    if (file.exists() && file.isFile()) {
+		return fileInputStream(file);
+	    } else {
 		return null;
 	    }
 	}
 	return getClass().getResourceAsStream(filename);
     }
 
-    private void closeFileOrFailIfNotFound(String filename, InputStream fileInputStream) {
+    private InputStream fileInputStream(File file) {
+	try {
+	    return new FileInputStream(file);
+	} catch (FileNotFoundException e) {
+	    e.printStackTrace();
+	    return null;
+	}
+    }
+
+    private void closeFileOrFailIfNotFound(String filename,
+	    InputStream fileInputStream) {
 	if (fileInputStream == null) {
 	    throw new ProxyDelegateQuietException(filename + " not found");
 	} else {
@@ -72,7 +94,7 @@ final class ResponseCreatorFileFinder {
 	try {
 	    fileInputStream.close();
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    LOG.error(e);
 	}
     }
 

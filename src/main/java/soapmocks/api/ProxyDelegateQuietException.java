@@ -18,11 +18,20 @@ package soapmocks.api;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import javax.xml.ws.ProtocolException;
+
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
+
 /**
- * Used in SoapMocks to handle {@link Response} parts where files are not found or other things go wrong.
- * Sets Proxy delegation on creation.
+ * Used in SoapMocks to handle {@link Response} parts where files are not found
+ * or other things go wrong. Sets Proxy delegation on creation.
  */
-public final class ProxyDelegateQuietException extends RuntimeException {
+// ProtocolException because it is logged as debug in jaxws-rt
+public final class ProxyDelegateQuietException extends ProtocolException {
+
+    private static final Log LOG = LogFactory
+	    .create(ProxyDelegateQuietException.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +42,7 @@ public final class ProxyDelegateQuietException extends RuntimeException {
 
     public ProxyDelegateQuietException(String message) {
 	super(message);
+	LOG.info(message);
 	ProxyDelegator.toProxy();
     }
 

@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-import soapmocks.api.Constants;
 import soapmocks.api.ProxyDelegator;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
@@ -40,7 +39,7 @@ final class ProxyRecordHandler {
 
     private void addSimpleFile(ProxyResult proxyResult,
 	    ProxyServiceIdentifier serviceIdentifier) throws IOException {
-	String pathnameSimple = getProxyTraceBaseDir() + getProxyTraceDir()
+	String pathnameSimple = ProxyRecordConfig.getProxyTraceAbsoluteDir()
 		+ serviceIdentifier.generateFilename();
 	File fileSimple = new File(pathnameSimple);
 	if (!fileSimple.exists()) {
@@ -53,7 +52,7 @@ final class ProxyRecordHandler {
     private void addHashedFile(ProxyResult proxyResult,
 	    ProxyServiceIdentifier serviceIdentifier) throws IOException {
 	String hash = new Filehasing().hash(proxyResult.bodyDeflated);
-	String pathnameWithHash = getProxyTraceBaseDir() + getProxyTraceDir()
+	String pathnameWithHash = ProxyRecordConfig.getProxyTraceAbsoluteDir()
 		+ serviceIdentifier.generateFilename(hash);
 	File fileWithHash = new File(pathnameWithHash);
 	if (!fileWithHash.exists()) {
@@ -65,18 +64,6 @@ final class ProxyRecordHandler {
 	}
     }
 
-    private String getProxyTraceBaseDir() {
-	String proxyRecordBaseDir = System.getProperty("basedir");
-	return proxyRecordBaseDir != null ? proxyRecordBaseDir
-		+ File.separatorChar : "";
-    }
+    
 
-    private String getProxyTraceDir() {
-	String proxyRecordDir = System
-		.getProperty(Constants.SOAPMOCKS_PROXYRECORD_DIR_SYSTEM_PROP);
-	if (proxyRecordDir != null && !proxyRecordDir.isEmpty()) {
-	    return proxyRecordDir + File.separatorChar;
-	}
-	return "target" + File.separatorChar + "proxyrecord" + File.separatorChar;
-    }
 }

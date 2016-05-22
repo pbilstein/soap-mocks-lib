@@ -25,22 +25,22 @@ import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import soapmocks.generic.ContextPath;
-import soapmocks.generic.StaticFileConfig;
-import soapmocks.generic.logging.Log;
-import soapmocks.generic.logging.LogFactory;
-
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import com.sun.xml.ws.transport.http.servlet.WSServlet;
 import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 
-public class WsServletContextListener implements ServletContextListener,
-	ServletContextAttributeListener {
+import soapmocks.api.Constants;
+import soapmocks.generic.ContextPath;
+import soapmocks.generic.StaticFileConfig;
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
+import soapmocks.generic.proxy.ProxyRecordConfig;
 
-    private static final Log LOG = LogFactory
-	    .create(WsServletContextListener.class);
+public class WsServletContextListener implements ServletContextListener, ServletContextAttributeListener {
+
+    private static final Log LOG = LogFactory.create(WsServletContextListener.class);
 
     private static final AtomicBoolean INVOKED = new AtomicBoolean(false);
 
@@ -61,10 +61,10 @@ public class WsServletContextListener implements ServletContextListener,
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 	ServletContext context = sce.getServletContext();
-	
+
 	ContextPath.SOAP_MOCKS_CONTEXT = sce.getServletContext().getContextPath();
-	LOG.outNoId("SoapMocks context " + ContextPath.SOAP_MOCKS_CONTEXT);
-	
+	SoapMocksStartup.LOG.out("SoapMocks context " + ContextPath.SOAP_MOCKS_CONTEXT);
+
 	try {
 	    parseAdaptersAndCreateDelegate(context);
 	} catch (MalformedURLException e) {
@@ -77,46 +77,51 @@ public class WsServletContextListener implements ServletContextListener,
 	if (wsServletDelegate != null) {
 	    wsServletDelegate.destroy();
 	}
-	LOG.outNoId("SoapMocks stopped");
+	LOG.out("SoapMocks stopped");
     }
 
-    void parseAdaptersAndCreateDelegate(ServletContext context)
-	    throws MalformedURLException {
+    void parseAdaptersAndCreateDelegate(ServletContext context) throws MalformedURLException {
 	if (INVOKED.getAndSet(true)) {
 	    return;
 	}
 
-	ClassLoader classLoader = Thread.currentThread()
-		.getContextClassLoader();
+	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	if (classLoader == null) {
 	    classLoader = getClass().getClassLoader();
 	}
 
+	int countJaxWsMocks;
 	try {
-	    AdapterLookup<ServletAdapter> parser = new AdapterLookup<ServletAdapter>(
-		    classLoader, new ServletResourceLoader(context),
-		    createContainer(context), new ServletAdapterList());
-	    List<ServletAdapter> servletAdapters = parser.parse(
-		    "jndi:/localhost/soap-mocks/WEB-INF/sun-jaxws.xml", null);
+	    AdapterLookup<ServletAdapter> parser = new AdapterLookup<ServletAdapter>(classLoader,
+		    new ServletResourceLoader(context), createContainer(context), new ServletAdapterList());
+	    List<ServletAdapter> servletAdapters = parser.parse("jndi:/localhost/soap-mocks/WEB-INF/sun-jaxws.xml",
+		    null);
 	    wsServletDelegate = new WSServletDelegate(servletAdapters, context);
-	    context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO,
-		    wsServletDelegate);
-	    LOG.outNoId("SoapMocks initialization\n");
-	    logServices(servletAdapters);
+	    context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, wsServletDelegate);
+	    LOG.out("SoapMocks initialization");
+	    countJaxWsMocks = logServices(servletAdapters);
 	} catch (Throwable e) {
 	    context.removeAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO);
 	    throw new RuntimeException(e);
 	}
-	StaticFileConfig.initWithRuntimeException();
-	LOG.outNoId("SoapMocks started\n");
+	int countStaticMocks = StaticFileConfig.initWithRuntimeException();
+	SoapMocksStartup.LOG.out(String.format(StartAsciiArt.SOAPMOCKS_ART, countJaxWsMocks, countStaticMocks,
+		configBaseToLog(), ProxyRecordConfig.getProxyTraceAbsoluteDir()));
     }
 
-    private void logServices(List<ServletAdapter> servletAdapters) {
+    private String configBaseToLog() {
+	String configBase = System.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
+	return configBase != null ? configBase : "CLASSPATH";
+    }
+
+    private int logServices(List<ServletAdapter> servletAdapters) {
+	int count = 0;
 	for (ServletAdapter servletAdapter : servletAdapters) {
-	    LOG.outNoId("#### " + servletAdapter.getName()
-		    + " JaxWs mock added for url pattern "
-		    + servletAdapter.urlPattern + "\n");
+	    SoapMocksStartup.LOG.out(
+		    "JaxWs-Mock " + servletAdapter.getName() + " added for url pattern " + servletAdapter.urlPattern);
+	    count++;
 	}
+	return count;
     }
 
     private Container createContainer(ServletContext servletContext) {

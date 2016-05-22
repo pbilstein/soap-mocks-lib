@@ -15,42 +15,34 @@ limitations under the License.
  */
 package soapmocks.generic.logging;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Log {
 
     private final Logger logger;
 
     Log(String clazz) {
-	this.logger = Logger.getLogger(clazz);
+	this.logger = LoggerFactory.getLogger(clazz);
     }
-    
-    public void outNoId(String message) {
-	System.out.println(message);
-    }
-    
+
     public void out(String message) {
-	System.out.println(id() + message);
+	logger.info(message);
     }
     
     public void info(String message) {
-	logger.info(id() + message);
+	logger.info(message);
     }
     
     public void debug(String message) {
-	logger.finer(id() + message);
+	logger.debug(message);
     }
     
     public void error(Throwable t, String message) {
-	logger.log(Level.SEVERE, id() + message, t);
+	logger.error(message, t);
     }
     
     public void error(Throwable t) {
-	logger.log(Level.SEVERE, id() + t.getMessage(), t);
-    }
-    
-    String id() {
-	return "[" + Thread.currentThread().getId() + "] ";
+	logger.error(t.getMessage(), t);
     }
 }

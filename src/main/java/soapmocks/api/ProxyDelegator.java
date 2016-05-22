@@ -17,7 +17,6 @@ package soapmocks.api;
 
 import soapmocks.generic.proxy.ProxyServiceIdentifier;
 
-
 /**
  * A Thread-Local that ensures correct handling of proxy requests.
  */
@@ -27,10 +26,9 @@ public final class ProxyDelegator {
     private static final ThreadLocal<ProxyServiceIdentifier> SERVICE_IDENTIFIER = new ThreadLocal<>();
     private static final ThreadLocal<Boolean> HAS_SERVICE_IDENTIFIER = new ThreadLocal<>();
 
-
     /**
-     * This enables the proxy delegation, if a proxy is available for the URI. This will skip
-     * the current JaxWS service call and send to proxy.
+     * This enables the proxy delegation, if a proxy is available for the URI.
+     * This will skip the current JaxWS service call and send to proxy.
      */
     public static void toProxy() {
 	IS_DELEGATED.set(true);
@@ -40,22 +38,25 @@ public final class ProxyDelegator {
      * This enables the proxy delegation, if a proxy is available for the URI.
      * In addition it sets the service identifier used by proxy records.
      *
-     * @param method The webservice method being called.
-     * @param parameters parameters that identify a unique request.
+     * @param {@link
+     * 	   RequestIdentifier} to identify a service request by method and
+     *            some parameters.
      */
-    public static void toProxy(String method, String... parameters) {
-	serviceIdentifier(method, parameters);
+    public static void toProxy(RequestIdentifier requestIdentifier) {
+	serviceIdentifier(requestIdentifier);
 	toProxy();
     }
-    
+
     /**
      * Sets the service identifier used by proxy records.
      * 
-     * @param method The webservice method being called.
-     * @param parameters parameters that identify a unique request.
+     * @param {@link
+     * 	   RequestIdentifier} to identify a service request by method and
+     *            some parameters.
      */
-    public static void serviceIdentifier(String method, String... parameters) {
-	SERVICE_IDENTIFIER.set(new ProxyServiceIdentifier(method, parameters));
+    public static void serviceIdentifier(RequestIdentifier requestIdentifier) {
+	SERVICE_IDENTIFIER
+		.set(new ProxyServiceIdentifier(requestIdentifier));
 	HAS_SERVICE_IDENTIFIER.set(true);
     }
 
@@ -66,16 +67,17 @@ public final class ProxyDelegator {
 	Boolean isDelegated = IS_DELEGATED.get();
 	return isDelegated != null ? isDelegated : false;
     }
-    
+
     /**
-     * @return boolean, true if a service identifier has been set for proxy records.
+     * @return boolean, true if a service identifier has been set for proxy
+     *         records.
      */
     public static boolean hasServiceIdentifier() {
 	Boolean isIdentified = HAS_SERVICE_IDENTIFIER.get();
 	return isIdentified != null ? isIdentified : false;
     }
-    
-    /** 
+
+    /**
      * @return {@link ProxyServiceIdentifier}
      */
     public static ProxyServiceIdentifier getServiceIdentifier() {
@@ -88,7 +90,7 @@ public final class ProxyDelegator {
     public static void reset() {
 	IS_DELEGATED.remove();
     }
-    
+
     /**
      * Reset the delegation and remove the service identifier.
      */

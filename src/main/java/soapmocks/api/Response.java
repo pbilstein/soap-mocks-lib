@@ -85,8 +85,8 @@ public final class Response {
      * @return Object to return in WebService
      */
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
-	    Class<RESPONSE_TYPE> classForResponseType, String responseTypeElement,
-	    RequestIdentifier requestIdentifier) {
+	    Class<RESPONSE_TYPE> classForResponseType,
+	    String responseTypeElement, RequestIdentifier requestIdentifier) {
 	return using(classForResponseType, responseTypeElement,
 		DefaultResponse.TRUE, requestIdentifier);
     }
@@ -114,14 +114,13 @@ public final class Response {
      * @return Object to return in WebService
      */
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
-	    Class<RESPONSE_TYPE> classForResponseType, String responseTypeElement,
-	    DefaultResponse defaultResponse, RequestIdentifier requestIdentifier) {
-	ProxyDelegator.serviceIdentifier(requestIdentifier.getMethod(),
-		requestIdentifier.getParameters());
+	    Class<RESPONSE_TYPE> classForResponseType,
+	    String responseTypeElement, DefaultResponse defaultResponse,
+	    RequestIdentifier requestIdentifier) {
+	ProxyDelegator.serviceIdentifier(requestIdentifier);
 	String filename = new ResponseCreatorFileFinder()
 		.findFileFromMethodsAndParameter(responseFile.baseDir(),
-			defaultResponse, requestIdentifier.getMethod(),
-			requestIdentifier.getParameters());
+			defaultResponse, requestIdentifier);
 	if (filename == null) {
 	    throw new ProxyDelegateQuietException("No response file found");
 	}

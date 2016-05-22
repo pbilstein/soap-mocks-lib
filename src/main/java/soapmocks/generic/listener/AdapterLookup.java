@@ -21,9 +21,9 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
 
-import org.reflections.Reflections;
+import javax.jws.WebService;
 
-import soapmocks.api.SoapMockUrl;
+import org.reflections.Reflections;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
@@ -32,14 +32,13 @@ import com.sun.xml.ws.transport.http.ResourceLoader;
 final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
 
     private String SUN_JAXWS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-	    + "<endpoints xmlns=\"http://java.sun.com/xml/ns/jax-ws/ri/runtime\" "
-	    + "version=\"2.0\">\n" + "--ENDPOINTS--" + "</endpoints>\n";
+	    + "<endpoints xmlns=\"http://java.sun.com/xml/ns/jax-ws/ri/runtime\" " + "version=\"2.0\">\n"
+	    + "--ENDPOINTS--" + "</endpoints>\n";
 
     private String SUN_JAXWS_XML_ENDPOINT_TEMPLATE = "   <endpoint name=\"--NAME--\" implementation=\"--IMPL--\" "
 	    + "url-pattern=\"--URLPATTERN--\" />";
 
-    public AdapterLookup(ClassLoader cl, ResourceLoader loader,
-	    Container container, AdapterFactory<A> adapterFactory)
+    public AdapterLookup(ClassLoader cl, ResourceLoader loader, Container container, AdapterFactory<A> adapterFactory)
 	    throws MalformedURLException {
 	super(cl, loader, container, adapterFactory);
     }
@@ -47,32 +46,24 @@ final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
     @Override
     public List<A> parse(String systemId, InputStream is) {
 	Reflections reflections = new Reflections("soapmocks.services");
-	Set<Class<?>> annotated = reflections
-		.getTypesAnnotatedWith(SoapMockUrl.class);
+	Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(WebService.class);
 	StringBuilder endpointString = new StringBuilder();
 	String sunJaxWs = findServicesAndCreateSytheticSunJaxWsXml(annotated, endpointString);
-	return super.parse(systemId, new ByteArrayInputStream(
-		sunJaxWs.getBytes()));
+	return super.parse(systemId, new ByteArrayInputStream(sunJaxWs.getBytes()));
     }
 
-    private String findServicesAndCreateSytheticSunJaxWsXml(Set<Class<?>> annotated,
-	    StringBuilder endpointString) {
+    private String findServicesAndCreateSytheticSunJaxWsXml(Set<Class<?>> annotated, StringBuilder endpointString) {
 	for (Class<?> serviceClass : annotated) {
-	    String urlPattern = serviceClass.getAnnotation(SoapMockUrl.class)
-		    .value();
+	    String urlPattern = serviceClass.getAnnotation(WebService.class).serviceName();
 	    Service service = new Service();
 	    service.implementation = serviceClass.getName();
 	    service.urlPattern = urlPattern;
 	    service.name = serviceClass.getSimpleName();
-	    endpointString.append(
-		    SUN_JAXWS_XML_ENDPOINT_TEMPLATE
-			    .replaceAll("--NAME--", service.name)
-			    .replaceAll("--IMPL--", service.implementation)
-			    .replaceAll("--URLPATTERN--", service.urlPattern))
+	    endpointString.append(SUN_JAXWS_XML_ENDPOINT_TEMPLATE.replaceAll("--NAME--", service.name)
+		    .replaceAll("--IMPL--", service.implementation).replaceAll("--URLPATTERN--", service.urlPattern))
 		    .append("\n");
 	}
-	String sunJaxws = SUN_JAXWS_XML.replaceAll("--ENDPOINTS--",
-		endpointString.toString());
+	String sunJaxws = SUN_JAXWS_XML.replaceAll("--ENDPOINTS--", endpointString.toString());
 	return sunJaxws;
     }
 

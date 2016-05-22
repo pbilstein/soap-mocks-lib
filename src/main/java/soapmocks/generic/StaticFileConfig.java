@@ -32,82 +32,80 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 import soapmocks.api.Constants;
-import soapmocks.generic.logging.Log;
-import soapmocks.generic.logging.LogFactory;
+import soapmocks.generic.listener.SoapMocksStartup;
 
 public final class StaticFileConfig {
 
-    private static final Log LOG = LogFactory.create(StaticFileConfig.class);
+    private static final String CONFIG_EXTENSION = ".config";
 
     static final Map<String, List<Properties>> URL_TO_FILE_MAPPING = new HashMap<String, List<Properties>>();
 
     private static final String GENERIC_SOAP_DIR = File.separatorChar + "static-files";
 
-    public static void initWithRuntimeException() {
+    public static int initWithRuntimeException() {
 	try {
+	    int count = 0;
 	    Collection<File> configFiles = findConfigFilesInGenericSoapMocks();
 	    for (File configFile : configFiles) {
 		Properties config = new Properties();
 		config.load(new FileInputStream(configFile));
 		configure(configFile.getName(), config);
+		count++;
 	    }
+	    return count;
 	} catch (IOException | URISyntaxException e) {
 	    throw new RuntimeException(e);
 	}
     }
 
-    private static Collection<File> findConfigFilesInGenericSoapMocks()
-	    throws URISyntaxException {
+    private static Collection<File> findConfigFilesInGenericSoapMocks() throws URISyntaxException {
 	String staticFilesDir = filesBaseDir();
 	if (staticFilesDir == null) {
-	    URL genericSoapDirResource = StaticFileConfig.class
-		    .getResource(GENERIC_SOAP_DIR);
+	    URL genericSoapDirResource = StaticFileConfig.class.getResource(GENERIC_SOAP_DIR);
 	    if (genericSoapDirResource == null) {
-		LOG.out("No generic soap files found.");
+		SoapMocksStartup.LOG.out("No static soap files found.");
 		return Collections.emptyList();
 	    }
 	}
 	File genericSoapDirFile = new File(staticFilesDir);
-	Collection<File> urlFiles = FileUtils.listFiles(genericSoapDirFile,
-		new IOFileFilter() {
-		    @Override
-		    public boolean accept(File arg0, String arg1) {
-			return arg0.getName().endsWith(".config");
-		    }
+	Collection<File> urlFiles = FileUtils.listFiles(genericSoapDirFile, new IOFileFilter() {
+	    @Override
+	    public boolean accept(File arg0, String arg1) {
+		return arg0.getName().endsWith(CONFIG_EXTENSION);
+	    }
 
-		    @Override
-		    public boolean accept(File arg0) {
-			return arg0.getName().endsWith(".config");
-		    }
-		}, new IOFileFilter() {
-		    @Override
-		    public boolean accept(File arg0, String arg1) {
-			return true;
-		    }
+	    @Override
+	    public boolean accept(File arg0) {
+		return arg0.getName().endsWith(CONFIG_EXTENSION);
+	    }
+	}, new IOFileFilter() {
+	    @Override
+	    public boolean accept(File arg0, String arg1) {
+		return true;
+	    }
 
-		    @Override
-		    public boolean accept(File arg0) {
-			return true;
-		    }
-		});
+	    @Override
+	    public boolean accept(File arg0) {
+		return true;
+	    }
+	});
 	if (urlFiles == null || urlFiles.isEmpty()) {
-	    LOG.out("No generic soap files found.");
+	    SoapMocksStartup.LOG.out("No static soap files found.");
 	    return Collections.emptyList();
 	}
 	return urlFiles;
     }
 
     private static String filesBaseDir() {
-	String filesBaseDir = System
-		.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
+	String filesBaseDir = System.getProperty(Constants.SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP);
 	return filesBaseDir;
     }
 
     private static void configure(String config, Properties file) {
 	String url = url(file);
 	String responseFile = responseFile(file);
-	LOG.outNoId("#### Static file mock " + config + " with url " + url
-		+ " and resp-file " + new File(responseFile).getName() + "\n");
+	SoapMocksStartup.LOG.out("Static-File-Mock " + config + " for url " + url + " and resp-file "
+		+ new File(responseFile).getName());
 	String completeUrl = ContextPath.SOAP_MOCKS_CONTEXT + url;
 	if (!URL_TO_FILE_MAPPING.containsKey(completeUrl)) {
 	    List<Properties> properties = new ArrayList<Properties>();

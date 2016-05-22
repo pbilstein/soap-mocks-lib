@@ -13,26 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package soapmocks.api;
+package soapmocks.generic.listener;
 
-import static java.lang.annotation.ElementType.TYPE;
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public class SoapMocksStartup {
 
-/**
- * Annotation that defines the service URL. Example: <p>
- * <p>
- * {@link SoapMockUrl}("/Webservice/Test") <p>
- * <p>
- * This will make the service available under http://host:port/soap-mocks/Webservice/Test<p>
- * <p>
- */
-@Retention(value=RetentionPolicy.RUNTIME)
-@Target({TYPE})
-public @interface SoapMockUrl {
-    
-    String value() default "NONE";
+    public static final Log LOG = LogFactory
+	    .create(SoapMocksStartup.class);
 
 }

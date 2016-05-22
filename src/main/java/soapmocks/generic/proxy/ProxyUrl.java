@@ -77,7 +77,7 @@ final class ProxyUrl {
 		.indexOf(ContextPath.SOAP_MOCKS_CONTEXT)
 		+ ContextPath.SOAP_MOCKS_CONTEXT.length());
 	String proxyUrl = proxies.getProperty(key) + uriPart;
-	LOG.out("ProxyUrl: " + proxyUrl);
+	LOG.out(proxyUrl);
 	return proxyUrl;
     }
 }
