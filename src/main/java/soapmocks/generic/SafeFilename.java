@@ -13,13 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package soapmocks.generic.proxy;
+package soapmocks.generic;
 
-final class SafeFilename {
+public final class SafeFilename {
 
     private static final String ALLOWED_FILENAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-0123456789";
     
-    String make(String fileName)
+    public String make(String fileName)
     {
         char[] newFileName = fileName.toCharArray();
         for (int i = 0; i < newFileName.length; i++)

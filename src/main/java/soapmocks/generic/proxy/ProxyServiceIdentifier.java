@@ -17,6 +17,7 @@ package soapmocks.generic.proxy;
 
 import soapmocks.api.RequestIdentifier;
 import soapmocks.api.ResponseIdentifier;
+import soapmocks.generic.SafeFilename;
 
 public final class ProxyServiceIdentifier {
 

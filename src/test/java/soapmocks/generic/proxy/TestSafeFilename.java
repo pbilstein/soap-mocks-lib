@@ -19,6 +19,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import soapmocks.generic.SafeFilename;
+
 public class TestSafeFilename {
 
     SafeFilename safeFilename = new SafeFilename();

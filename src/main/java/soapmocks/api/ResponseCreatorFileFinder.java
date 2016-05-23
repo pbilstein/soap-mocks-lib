@@ -21,27 +21,32 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import soapmocks.generic.SafeFilename;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
 
 final class ResponseCreatorFileFinder {
 
     private static final Log LOG = LogFactory.create(ResponseCreatorFileFinder.class);
+    private final SafeFilename safeFilename = new SafeFilename();;
 
     String findFileFromMethodsAndParameter(String basedir, DefaultResponse defaultResponse,
 	    RequestIdentifier requestIdentifier) {
 	final String method = requestIdentifier.getMethod();
 	final String[] parameters = requestIdentifier.getParameters();
-	String filename = "/" + method;
+	String filename = method;
 	for (String parameter : parameters) {
 	    filename += "-" + parameter;
 	}
 	filename += ".xml";
+	
+	filename = "/" + safeFilename.make(filename);
+	
 	InputStream fileInputStream = getFile(basedir + filename);
 
 	if (fileInputStream == null) {
 	    if (DefaultResponse.TRUE == defaultResponse) {
-		filename = "/" + method + "-default.xml";
+		filename = "/" + safeFilename.make(method + "-default.xml");
 	    } else {
 		throw new ProxyDelegateQuietException(filename + " not found");
 	    }
