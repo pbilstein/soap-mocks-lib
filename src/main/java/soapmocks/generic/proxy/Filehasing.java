@@ -20,32 +20,28 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import soapmocks.api.ResponseIdentifier;
 
 public class Filehasing {
     
-    private static final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
     public String hash(byte[] xml1, ResponseIdentifier responseIdentifier) {
@@ -54,50 +50,46 @@ public class Filehasing {
 
     private String createHash(byte[] xml1, ResponseIdentifier responseIdentifier) {
 	try {
-	    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-	    Document doc = docBuilder.parse(new ByteArrayInputStream(xml1));
-
-	    if (responseIdentifier != null && responseIdentifier.getExcludes() != null) {
-		String[] excludes = responseIdentifier.getExcludes();
-		for (String exclude : excludes) {
-		    deleteExclude(doc, exclude);
-		}
-	    }
-
-	    return createHashFromDocument(doc);
+	    return createHashFromDocument(xml1, responseIdentifier);
 	} catch (Exception e) {
 	    throw new RuntimeException(e);
 	}
     }
 
-    public void deleteExclude(Document doc, String exclude) {
-	NodeList nodes = doc.getElementsByTagName(exclude);
-	for (int i = 0; i < nodes.getLength(); i++) {
-	    Element element = (Element) nodes.item(i);
-	    element.getParentNode().removeChild(element);
-	}
-    }
 
-    private String createHashFromDocument(Document doc) throws TransformerFactoryConfigurationError,
+    private String createHashFromDocument(byte[] xml1, ResponseIdentifier responseIdentifier) throws TransformerFactoryConfigurationError,
 	    TransformerConfigurationException, TransformerException, NoSuchAlgorithmException, DocumentException, IOException {
 	Transformer transformer = transformerFactory.newTransformer();
 	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 	transformer.setOutputProperty(OutputKeys.INDENT, "no");
 	
 	StringWriter writer = new StringWriter();
-	transformer.transform(new DOMSource(doc), new StreamResult(writer));
+	transformer.transform(new StreamSource(new ByteArrayInputStream(xml1)), new StreamResult(writer));
 	String output = writer.getBuffer().toString();
 
 	OutputFormat outputFormat = OutputFormat.createCompactFormat();
 	outputFormat.setIndent(false);
 	outputFormat.setSuppressDeclaration(true);
 	org.dom4j.Document doc2 = DocumentHelper.parseText(output);
+
+	if (responseIdentifier != null && responseIdentifier.getExcludes() != null) {
+		String[] excludes = responseIdentifier.getExcludes();
+		for (String exclude : excludes) {
+		    @SuppressWarnings("unchecked")
+		    List<Node> selectNodes = (List<Node>)doc2.selectNodes("//*[local-name()='"+exclude+"']");
+		    if(selectNodes.size()>0) {
+			Node node = (Node) selectNodes.get(0);
+			node.detach();
+		    }
+		}
+	    }
 	
 	StringWriter stringWriter = new StringWriter();
 	XMLWriter xmlWriter = new XMLWriter( stringWriter, outputFormat );
 	xmlWriter.write(doc2);
         
 	String resultXml = stringWriter.toString();
+	System.out.println(resultXml);
 	String hash = (new HexBinaryAdapter()).marshal(MessageDigest.getInstance("MD5").digest(resultXml.getBytes()))
 		.toLowerCase();
 	return hash;

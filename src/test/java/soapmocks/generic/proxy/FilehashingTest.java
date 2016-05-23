@@ -28,7 +28,9 @@ public class FilehashingTest {
     String xml1 = "<xml><data>blah</data></xml>";
     String xml1WithWhiteSpace = "<xml>  <data>blah</data>  </xml>";
     String xml1WithWhiteSpaceAndNewLine = "<xml>  <data>blah</data>  \r\n <session></session> </xml>";
-    String xml1WithSession = "<xml><data>blah</data><session></session></xml>";
+    String xml1WithSession = "<xml><data>blah</data><session>$01</session></xml>";
+    String xml1NoSessionNS = "<xml xmlns:ns=\"http://www.namespace.de/\"><ns:data>blah</ns:data></xml>";
+    String xml1WithSessionNS = "<xml xmlns:ns=\"http://www.namespace.de/\"><ns:data>blah</ns:data><ns:session>$01</ns:session></xml>";
     String xml2 = "<xml><data>blah2</data></xml>";
     String xml3Like1ButFormatted = "<xml>\n\r<data>\n\rblah</data></xml>";
     
@@ -75,7 +77,6 @@ public class FilehashingTest {
     public void assureThatWhiteSpaceNormalizationWorks() {
 	firstXml = xml1.getBytes();
 	secondXml = xml1WithWhiteSpace.getBytes();
-	excludes = new String[]{"session"};
 	runHashing();
 	assertEquals(hashResult1, hashResult2);
     }
@@ -97,7 +98,16 @@ public class FilehashingTest {
 	runHashing();
 	assertEquals(hashResult1, hashResult2);
     }
-
+    
+    @Test
+    public void assureThatExcludeElementWithNSWorks() {
+	firstXml = xml1NoSessionNS.getBytes();
+	secondXml = xml1WithSessionNS.getBytes();
+	excludes = new String[]{"session"};
+	runHashing();
+	assertEquals(hashResult1, hashResult2);
+    }
+    
     private void runHashing() {
 	hashResult1 = filehashing.hash(firstXml, ResponseIdentifier.with().elementHashExcludes(excludes).build());
 	if(secondXml!=null) {
