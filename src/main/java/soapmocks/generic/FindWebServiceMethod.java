@@ -31,7 +31,7 @@ public class FindWebServiceMethod {
 		Class<?> class1 = Class.forName(stackTraceElement.getClassName());
 		Annotation[] annotations = class1.getAnnotations();
 		for (Annotation annotation : annotations) {
-		    if(annotation.getClass().getCanonicalName().equals(WebService.class.getCanonicalName())) {
+		    if(annotation.annotationType().getCanonicalName().equals(WebService.class.getCanonicalName())) {
 			methodName = stackTraceElement.getMethodName();
 		    }
 		}
