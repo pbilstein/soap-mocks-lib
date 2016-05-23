@@ -16,14 +16,18 @@ limitations under the License.
 package soapmocks.api;
 
 /**
- * An API class to help identify the response by a hash and excluded elements.
+ * An API class to help identify a unique response by a hash and excluded
+ * elements and also for creating the response object in JaxWs.
  */
 public class ResponseIdentifier {
 
+    private final DefaultResponse defaultResponse;
     private final String elementResponse;
     private final String[] elementExcludes;
 
-    private ResponseIdentifier(String elementResponse, String... elementExcludes) {
+    private ResponseIdentifier(DefaultResponse defaultResponse,
+	    String elementResponse, String... elementExcludes) {
+	this.defaultResponse = defaultResponse;
 	this.elementResponse = elementResponse;
 	this.elementExcludes = elementExcludes;
     }
@@ -40,11 +44,15 @@ public class ResponseIdentifier {
 	return new Builder();
     }
 
+    public DefaultResponse getDefaultResponse() {
+	return defaultResponse;
+    }
+
     /**
-     * Identify the response payload by hash, but the hash will exclude some
-     * element (e.g. session elements)
+     * Builder to create an instance.
      */
     public static class Builder {
+	private DefaultResponse defaultResponse;
 	private String elementResponse;
 	private String[] elementExcludes;
 
@@ -60,8 +68,19 @@ public class ResponseIdentifier {
 	/**
 	 * The elements that shall be excluded during response hash creation.
 	 */
-	public ResponseIdentifier.Builder elementHashExcludes(String... elementExcludes) {
+	public ResponseIdentifier.Builder elementHashExcludes(
+		String... elementExcludes) {
 	    this.elementExcludes = elementExcludes;
+	    return this;
+	}
+
+	/**
+	 * Whether a default response shall be searched for when looking up for
+	 * response files.
+	 */
+	public ResponseIdentifier.Builder defaultResponse(
+		DefaultResponse defaultResponse) {
+	    this.defaultResponse = defaultResponse;
 	    return this;
 	}
 
@@ -71,7 +90,8 @@ public class ResponseIdentifier {
 	 * @return {@link ResponseIdentifier} instance.
 	 */
 	public ResponseIdentifier build() {
-	    return new ResponseIdentifier(elementResponse, elementExcludes);
+	    return new ResponseIdentifier(defaultResponse, elementResponse,
+		    elementExcludes);
 	}
     }
 }

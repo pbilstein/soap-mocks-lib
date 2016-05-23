@@ -62,14 +62,14 @@ public final class Response {
     public <RESPONSE_TYPE> RESPONSE_TYPE using(
 	    Class<RESPONSE_TYPE> classForResponseType,
 	    RequestIdentifier requestIdentifier) {
-	return using(classForResponseType, null, DefaultResponse.TRUE,
-		requestIdentifier);
+	return using(classForResponseType, null, requestIdentifier);
     }
 
     /**
      * Create the response object using all information given. If nothing was
-     * found for method and parameter, it will try to find a default file. If
-     * this fails, proxy delegation jumps in if configured.
+     * found for method and parameter, it will try to find a default file when
+     * ResponseIdentifer is set to DefaultResponse.TRUE. If this fails,
+     * proxy delegation jumps in if configured.
      * <p>
      * <p>
      * Supports Service Identifier, so when proxy delegation jumps in, it will
@@ -91,41 +91,12 @@ public final class Response {
 	    Class<RESPONSE_TYPE> classForResponseType,
 	    ResponseIdentifier responseIdentifier,
 	    RequestIdentifier requestIdentifier) {
-	return using(classForResponseType, responseIdentifier,
-		DefaultResponse.TRUE, requestIdentifier);
-    }
-
-    /**
-     * Create the response object using all information given. If nothing was
-     * found for method and parameter, it will try to find a default file, when
-     * defaultXml is true. If this fails, proxy delegation jumps in if
-     * configured.
-     * <p>
-     * <p>
-     * Supports Service Identifier, so when proxy delegation jumps in, it will
-     * be able to create a record.
-     * <p>
-     * 
-     * @param classForResponseType
-     *            The type of the response object.
-     * @param responseIdentifier
-     *            The element in the response file representing the response
-     *            object and more information in response.
-     * @param defaultResponse
-     *            TRUE when a default response shall be searched for.
-     * @param requestIdentifier
-     *            {@link RequestIdentifier} to identify a request and find its
-     *            matching response.
-     * @return Object to return in WebService.
-     */
-    public <RESPONSE_TYPE> RESPONSE_TYPE using(
-	    Class<RESPONSE_TYPE> classForResponseType,
-	    ResponseIdentifier responseIdentifier,
-	    DefaultResponse defaultResponse, RequestIdentifier requestIdentifier) {
 	ProxyDelegator.serviceIdentifier(requestIdentifier, responseIdentifier);
 	String filename = new ResponseCreatorFileFinder()
-		.findFileFromMethodsAndParameter(responseFile.baseDir(),
-			defaultResponse, requestIdentifier);
+		.findFileFromMethodsAndParameter(
+			responseFile.baseDir(),
+			responseIdentifier != null ? responseIdentifier
+				.getDefaultResponse() : null, requestIdentifier);
 	if (filename == null) {
 	    throw new ProxyDelegateQuietException("No response file found");
 	}
