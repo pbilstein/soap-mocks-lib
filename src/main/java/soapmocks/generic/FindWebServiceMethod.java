@@ -15,6 +15,8 @@ limitations under the License.
  */
 package soapmocks.generic;
 
+import java.lang.annotation.Annotation;
+
 import javax.jws.WebService;
 
 import soapmocks.api.ProxyDelegateQuietException;
@@ -27,8 +29,11 @@ public class FindWebServiceMethod {
 	for (StackTraceElement stackTraceElement : stackTraceElements) {
 	    try {
 		Class<?> class1 = Class.forName(stackTraceElement.getClassName());
-		if(class1.isAnnotationPresent(WebService.class)) {
-		    methodName = stackTraceElement.getMethodName();
+		Annotation[] annotations = class1.getAnnotations();
+		for (Annotation annotation : annotations) {
+		    if(annotation.getClass().getCanonicalName().equals(WebService.class.getCanonicalName())) {
+			methodName = stackTraceElement.getMethodName();
+		    }
 		}
 	    } catch (ClassNotFoundException e) {
 		throw new ProxyDelegateQuietException(e);
