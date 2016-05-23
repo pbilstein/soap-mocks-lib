@@ -4,7 +4,7 @@
 
 	<groupId>com.github.pbilstein.infrastructure-mocks</groupId>
 	<artifactId>soap-mocks-lib</artifactId>
-	<version>0.9</version>
+	<version>0.10-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>com.github.pbilstein.infrastructuremocks:soap-mocks-lib</name>
 	<description>A library that can be used to mockup SOAP services and record proxy requests to other servers.</description>
@@ -139,6 +139,11 @@
 		    <groupId>dom4j</groupId>
 		    <artifactId>dom4j</artifactId>
 		    <version>1.6.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>jaxen</groupId>
+		    <artifactId>jaxen</artifactId>
+		    <version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
