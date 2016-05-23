@@ -16,6 +16,7 @@ limitations under the License.
 package soapmocks.generic.proxy;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +33,10 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -39,7 +44,7 @@ import org.w3c.dom.NodeList;
 import soapmocks.api.ResponseIdentifier;
 
 public class Filehasing {
-
+    
     private static final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
@@ -51,8 +56,6 @@ public class Filehasing {
 	try {
 	    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 	    Document doc = docBuilder.parse(new ByteArrayInputStream(xml1));
-	    Element documentElement = doc.getDocumentElement();
-	    documentElement.normalize();
 
 	    if (responseIdentifier != null && responseIdentifier.getExcludes() != null) {
 		String[] excludes = responseIdentifier.getExcludes();
@@ -76,13 +79,26 @@ public class Filehasing {
     }
 
     private String createHashFromDocument(Document doc) throws TransformerFactoryConfigurationError,
-	    TransformerConfigurationException, TransformerException, NoSuchAlgorithmException {
+	    TransformerConfigurationException, TransformerException, NoSuchAlgorithmException, DocumentException, IOException {
 	Transformer transformer = transformerFactory.newTransformer();
 	transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+	transformer.setOutputProperty(OutputKeys.INDENT, "no");
+	
 	StringWriter writer = new StringWriter();
 	transformer.transform(new DOMSource(doc), new StreamResult(writer));
-	String output = writer.getBuffer().toString().replaceAll("\n|\r", "");
-	String hash = (new HexBinaryAdapter()).marshal(MessageDigest.getInstance("MD5").digest(output.getBytes()))
+	String output = writer.getBuffer().toString();
+
+	OutputFormat outputFormat = OutputFormat.createCompactFormat();
+	outputFormat.setIndent(false);
+	outputFormat.setSuppressDeclaration(true);
+	org.dom4j.Document doc2 = DocumentHelper.parseText(output);
+	
+	StringWriter stringWriter = new StringWriter();
+	XMLWriter xmlWriter = new XMLWriter( stringWriter, outputFormat );
+	xmlWriter.write(doc2);
+        
+	String resultXml = stringWriter.toString();
+	String hash = (new HexBinaryAdapter()).marshal(MessageDigest.getInstance("MD5").digest(resultXml.getBytes()))
 		.toLowerCase();
 	return hash;
     }

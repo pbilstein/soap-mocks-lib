@@ -26,7 +26,9 @@ public class FilehashingTest {
 
     Filehasing filehashing = new Filehasing();
     String xml1 = "<xml><data>blah</data></xml>";
-    String xml1WithSession = "<xml><data>blah</data><session>uiii</session></xml>";
+    String xml1WithWhiteSpace = "<xml>  <data>blah</data>  </xml>";
+    String xml1WithWhiteSpaceAndNewLine = "<xml>  <data>blah</data>  \r\n <session></session> </xml>";
+    String xml1WithSession = "<xml><data>blah</data><session></session></xml>";
     String xml2 = "<xml><data>blah2</data></xml>";
     String xml3Like1ButFormatted = "<xml>\n\r<data>\n\rblah</data></xml>";
     
@@ -65,6 +67,24 @@ public class FilehashingTest {
     public void assureThatFormattedHashWorks() {
 	firstXml = xml1.getBytes();
 	secondXml = xml3Like1ButFormatted.getBytes();
+	runHashing();
+	assertEquals(hashResult1, hashResult2);
+    }
+    
+    @Test
+    public void assureThatWhiteSpaceNormalizationWorks() {
+	firstXml = xml1.getBytes();
+	secondXml = xml1WithWhiteSpace.getBytes();
+	excludes = new String[]{"session"};
+	runHashing();
+	assertEquals(hashResult1, hashResult2);
+    }
+    
+    @Test
+    public void assureThatWhiteSpaceNewLineNormalizationWorks() {
+	firstXml = xml1.getBytes();
+	secondXml = xml1WithWhiteSpaceAndNewLine.getBytes();
+	excludes = new String[]{"session"};
 	runHashing();
 	assertEquals(hashResult1, hashResult2);
     }
