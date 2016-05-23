@@ -99,9 +99,9 @@ public class FilehashingTest {
     }
 
     private void runHashing() {
-	hashResult1 = filehashing.hash(firstXml, ResponseIdentifier.with().elementExcludes(excludes).build());
+	hashResult1 = filehashing.hash(firstXml, ResponseIdentifier.with().elementHashExcludes(excludes).build());
 	if(secondXml!=null) {
-	    hashResult2 = filehashing.hash(secondXml, ResponseIdentifier.with().elementExcludes(excludes).build());
+	    hashResult2 = filehashing.hash(secondXml, ResponseIdentifier.with().elementHashExcludes(excludes).build());
 	}
     }
 }

@@ -60,7 +60,7 @@ public class ResponseIdentifier {
 	/**
 	 * The elements that shall be excluded during response hash creation.
 	 */
-	public ResponseIdentifier.Builder elementExcludes(String... elementExcludes) {
+	public ResponseIdentifier.Builder elementHashExcludes(String... elementExcludes) {
 	    this.elementExcludes = elementExcludes;
 	    return this;
 	}

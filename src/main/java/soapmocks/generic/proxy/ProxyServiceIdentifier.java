@@ -48,7 +48,7 @@ public final class ProxyServiceIdentifier {
 	    filename.append("-").append(parameter);
 	}
 	addHashIfNotNull(hash, filename);
-	return filename.append(".xml").toString();
+	return new SafeFilename().make(filename.append(".xml").toString());
     }
 
     private void addHashIfNotNull(String hash, StringBuilder filename) {
@@ -60,4 +60,6 @@ public final class ProxyServiceIdentifier {
     ResponseIdentifier getResponseIdentifier() {
 	return responseIdentifier;
     }
+    
+    
 }
