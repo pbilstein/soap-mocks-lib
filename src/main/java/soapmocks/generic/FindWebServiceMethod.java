@@ -19,26 +19,33 @@ import java.lang.annotation.Annotation;
 
 import javax.jws.WebService;
 
+import soapmocks.api.Constants;
 import soapmocks.api.ProxyDelegateQuietException;
 
 public class FindWebServiceMethod {
 
     public static String get() {
-	String methodName = "unknownMethod";
+	String methodName = null;
 	StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 	for (StackTraceElement stackTraceElement : stackTraceElements) {
 	    try {
-		Class<?> class1 = Class.forName(stackTraceElement.getClassName());
-		Annotation[] annotations = class1.getAnnotations();
-		for (Annotation annotation : annotations) {
-		    if(annotation.annotationType().getCanonicalName().equals(WebService.class.getCanonicalName())) {
-			methodName = stackTraceElement.getMethodName();
+		String className = stackTraceElement.getClassName();
+		if(className.startsWith(Constants.SOAPMOCKS_SERVICES_PACKAGE)) {
+		    Class<?> class1 = Class.forName(className);
+		    Annotation[] annotations = class1.getAnnotations();
+		    for (Annotation annotation : annotations) {
+			if(annotation.annotationType().getCanonicalName().equals(WebService.class.getCanonicalName())) {
+			    methodName = stackTraceElement.getMethodName();
+			}
 		    }
 		}
 	    } catch (ClassNotFoundException e) {
-		throw new ProxyDelegateQuietException(e);
+		continue;
 	    }
     	}
+	if(methodName==null) {
+	    throw new ProxyDelegateQuietException("Webservice method not found.");
+	}
 	return methodName;
     }
 }

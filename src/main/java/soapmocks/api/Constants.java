@@ -21,4 +21,6 @@ public final class Constants {
 
     public static final String SOAPMOCKS_FILES_BASEDIR_SYSTEM_PROP = "soapmocks.files.basedir";
 
+    public static final String SOAPMOCKS_SERVICES_PACKAGE = "soapmocks.services";
+
 }

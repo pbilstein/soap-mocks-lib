@@ -26,13 +26,14 @@ import javax.jws.WebService;
 
 import org.reflections.Reflections;
 
+import soapmocks.api.Constants;
+
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
 import com.sun.xml.ws.transport.http.ResourceLoader;
 
 final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
 
-    private static final String SOAPMOCKS_SERVICES = "soapmocks.services";
 
     private String SUN_JAXWS_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 	    + "<endpoints xmlns=\"http://java.sun.com/xml/ns/jax-ws/ri/runtime\" " + "version=\"2.0\">\n"
@@ -48,7 +49,7 @@ final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
 
     @Override
     public List<A> parse(String systemId, InputStream is) {
-	Reflections reflections = new Reflections(SOAPMOCKS_SERVICES);
+	Reflections reflections = new Reflections(Constants.SOAPMOCKS_SERVICES_PACKAGE);
 	Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(WebService.class);
 	StringBuilder endpointString = new StringBuilder();
 	String sunJaxWs = findServicesAndCreateSytheticSunJaxWsXml(annotated, endpointString);
