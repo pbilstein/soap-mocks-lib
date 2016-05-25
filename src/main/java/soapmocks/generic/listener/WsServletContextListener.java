@@ -30,7 +30,7 @@ import soapmocks.generic.StaticFileConfig;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
 import soapmocks.generic.proxy.ProxyRecordConfig;
-import soapmocks.generic.servlet.ContextPath;
+import soapmocks.generic.servlet.ContextBasePath;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
@@ -62,8 +62,8 @@ public class WsServletContextListener implements ServletContextListener, Servlet
     public void contextInitialized(ServletContextEvent sce) {
 	ServletContext context = sce.getServletContext();
 
-	ContextPath.SOAP_MOCKS_CONTEXT = sce.getServletContext().getContextPath();
-	SoapMocksStartup.LOG.out("SoapMocks context " + ContextPath.SOAP_MOCKS_CONTEXT);
+	ContextBasePath.SOAP_MOCKS_CONTEXT = sce.getServletContext().getContextPath();
+	SoapMocksStartup.LOG.out("SoapMocks context " + ContextBasePath.SOAP_MOCKS_CONTEXT);
 
 	try {
 	    parseAdaptersAndCreateDelegate(context);

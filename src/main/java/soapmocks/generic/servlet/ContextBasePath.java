@@ -15,7 +15,7 @@ limitations under the License.
  */
 package soapmocks.generic.servlet;
 
-public class ContextPath {
+public class ContextBasePath {
 
     public static String SOAP_MOCKS_CONTEXT = "";  
     

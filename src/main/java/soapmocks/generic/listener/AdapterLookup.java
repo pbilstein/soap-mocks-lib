@@ -27,6 +27,7 @@ import javax.jws.WebService;
 import org.reflections.Reflections;
 
 import soapmocks.api.Constants;
+import soapmocks.api.ContextPath;
 
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.transport.http.DeploymentDescriptorParser;
@@ -59,10 +60,16 @@ final class AdapterLookup<A> extends DeploymentDescriptorParser<A> {
     private String findServicesAndCreateSytheticSunJaxWsXml(Set<Class<?>> annotated, StringBuilder endpointString) {
 	Set<String> urls = new HashSet<>();
 	for (Class<?> serviceClass : annotated) {
-	    String urlPattern = serviceClass.getAnnotation(WebService.class).serviceName();
 	    Service service = new Service();
 	    service.implementation = serviceClass.getName();
-	    service.urlPattern = urlPattern;
+	    if(!serviceClass.isAnnotationPresent(ContextPath.class)) {
+		throw new RuntimeException("Class with @WebService must also have @ContextPath from soapmocks.api package.");
+	    }
+	    ContextPath contextPath = serviceClass.getAnnotation(ContextPath.class);
+	    if(serviceClass.getAnnotation(WebService.class).endpointInterface().isEmpty()) {
+		throw new RuntimeException("Class with @WebService must have defined endpointInterface.");
+	    }
+	    service.urlPattern = contextPath.value();
 	    service.name = serviceClass.getSimpleName();
 	    checkService(urls, service);
 	    endpointString.append(SUN_JAXWS_XML_ENDPOINT_TEMPLATE.replaceAll("--NAME--", service.name)

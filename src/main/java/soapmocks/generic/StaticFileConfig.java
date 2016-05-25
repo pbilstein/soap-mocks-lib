@@ -33,7 +33,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 
 import soapmocks.api.Constants;
 import soapmocks.generic.listener.SoapMocksStartup;
-import soapmocks.generic.servlet.ContextPath;
+import soapmocks.generic.servlet.ContextBasePath;
 
 public final class StaticFileConfig {
 
@@ -107,7 +107,7 @@ public final class StaticFileConfig {
 	String responseFile = responseFile(file);
 	SoapMocksStartup.LOG.out("Static-File-Mock " + config + " for url " + url + " and resp-file "
 		+ new File(responseFile).getName());
-	String completeUrl = ContextPath.SOAP_MOCKS_CONTEXT + url;
+	String completeUrl = ContextBasePath.SOAP_MOCKS_CONTEXT + url;
 	if (!URL_TO_FILE_MAPPING.containsKey(completeUrl)) {
 	    List<Properties> properties = new ArrayList<Properties>();
 	    URL_TO_FILE_MAPPING.put(completeUrl, properties);

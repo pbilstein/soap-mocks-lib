@@ -24,7 +24,7 @@ import java.util.Set;
 import soapmocks.api.Constants;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
-import soapmocks.generic.servlet.ContextPath;
+import soapmocks.generic.servlet.ContextBasePath;
 
 final class ProxyUrl {
     
@@ -74,8 +74,8 @@ final class ProxyUrl {
     private String extractProxyUri(String uri, String key) {
 	key.indexOf(uri);
 	String uriPart = uri.substring(uri
-		.indexOf(ContextPath.SOAP_MOCKS_CONTEXT)
-		+ ContextPath.SOAP_MOCKS_CONTEXT.length());
+		.indexOf(ContextBasePath.SOAP_MOCKS_CONTEXT)
+		+ ContextBasePath.SOAP_MOCKS_CONTEXT.length());
 	String proxyUrl = proxies.getProperty(key) + uriPart;
 	LOG.out(proxyUrl);
 	return proxyUrl;
