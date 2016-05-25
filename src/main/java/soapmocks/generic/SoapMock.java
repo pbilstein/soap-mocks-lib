@@ -97,13 +97,12 @@ public abstract class SoapMock extends
 		resp.setStatus(code);
 		send(resp, soapResponse.getResponseStream());
 		resp.commit();
-		LOG.out("MOCKED (Generic Config) Response sent (" + code + "). "
-			+ mockPercentageLog.logMock() + "\n");
+		LOG.out("MOCKED (Generic Config) Response sent (" + code
+			+ "). " + mockPercentageLog.logMock() + "\n");
 	    } else {
 		sendFault(resp);
 		resp.commit();
-		LOG.out("Fault sent. " + mockPercentageLog.logMock()
-			+ " \n");
+		LOG.out("Fault sent. " + mockPercentageLog.logMock() + " \n");
 	    }
 	}
     }
@@ -123,16 +122,28 @@ public abstract class SoapMock extends
 		LOG.out("Using Proxy now...");
 		long time = proxyHandler.doPost(uri, req, resp);
 		resp.commit();
-		LOG.out("Proxy Response sent (took " + time
-			+ "ms). " + mockPercentageLog.logProxy() + "\n");
+		LOG.out("Proxy Response sent (took " + time + "ms). "
+			+ mockPercentageLog.logProxy() + "\n");
 	    } else {
-		throw new RuntimeException("No mock or proxy found");
+		String additionalMessage = "No mock or proxy found.";
+		sendFault(resp, additionalMessage);
+		resp.commit();
+		LOG.out("Fault sent. " + additionalMessage + " "
+			+ mockPercentageLog.logMock() + " \n");
 	    }
 	}
     }
 
     private void sendFault(HttpServletResponse resp) throws IOException {
+	sendFault(resp, null);
+    }
+
+    private void sendFault(HttpServletResponse resp, String additionalMessage)
+	    throws IOException {
 	String message = "SOAPMOCKS did not find a fitting response for the given request.";
+	if (additionalMessage != null) {
+	    message += " " + additionalMessage;
+	}
 	String fault = "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
 		+ "	<SOAP-ENV:Header/>\n"
 		+ "	<SOAP-ENV:Body>\n"
