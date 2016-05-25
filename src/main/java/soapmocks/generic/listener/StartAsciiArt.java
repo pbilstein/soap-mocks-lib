@@ -17,7 +17,7 @@ package soapmocks.generic.listener;
 
 final class StartAsciiArt {
 
-    static final String SOAPMOCKS_ART = "Done.\n"
+    static final String SOAPMOCKS_ART = "Done.\n\n"
 	    + "  ___  ___   __ _ _ __  _ __ ___   ___   ___| | _____ \n"
 	    + " / __|/ _ \\ / _` | '_ \\| '_ ` _ \\ / _ \\ / __| |/ / __|\n"
 	    + " \\__ \\ (_) | (_| | |_) | | | | | | (_) | (__|   <\\__ \\\n"
