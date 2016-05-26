@@ -94,7 +94,7 @@ public class WsServletContextListener implements ServletContextListener, Servlet
 	try {
 	    AdapterLookup<ServletAdapter> parser = new AdapterLookup<ServletAdapter>(classLoader,
 		    new ServletResourceLoader(context), createContainer(context), new ServletAdapterList());
-	    List<ServletAdapter> servletAdapters = parser.parse("jndi:/localhost/soap-mocks/WEB-INF/sun-jaxws.xml",
+	    List<ServletAdapter> servletAdapters = parser.parse("WEB-INF/sun-jaxws.xml",
 		    null);
 	    wsServletDelegate = new WSServletDelegate(servletAdapters, context);
 	    context.setAttribute(WSServlet.JAXWS_RI_RUNTIME_INFO, wsServletDelegate);
