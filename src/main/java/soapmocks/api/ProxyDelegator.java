@@ -72,7 +72,8 @@ public final class ProxyDelegator {
      *            object creation
      */
     public static void serviceIdentifier(RequestIdentifier requestIdentifier, ResponseIdentifier responseIdentifier) {
-	SERVICE_IDENTIFIER.set(new ProxyServiceIdentifier(requestIdentifier, responseIdentifier));
+	ProxyServiceIdentifier proxyServiceIdentifier = new ProxyServiceIdentifier(requestIdentifier, responseIdentifier);
+	SERVICE_IDENTIFIER.set(proxyServiceIdentifier);
 	HAS_SERVICE_IDENTIFIER.set(true);
     }
 

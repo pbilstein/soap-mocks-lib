@@ -39,8 +39,12 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import soapmocks.api.ResponseIdentifier;
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
 
 public class Filehasing {
+    
+    private static final Log LOG = LogFactory.create(ProxyPostHandler.class);
     
     private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
@@ -52,7 +56,8 @@ public class Filehasing {
 	try {
 	    return createHashFromDocument(xml1, responseIdentifier);
 	} catch (Exception e) {
-	    throw new RuntimeException(e);
+	    LOG.info("Hashing failed: " + e.getMessage());
+	    return "nohash";
 	}
     }
 

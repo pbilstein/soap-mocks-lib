@@ -48,7 +48,7 @@ final class ResponseCreatorFileFinder {
 	    if (DefaultResponse.TRUE == defaultResponse) {
 		filename = "/" + safeFilename.make(method + "-default.xml");
 	    } else {
-		throw new ProxyDelegateQuietException(filename + " not found");
+		throw new ProxyDelegateException(filename + " not found");
 	    }
 	} else {
 	    closeQuietly(fileInputStream);
@@ -85,7 +85,7 @@ final class ResponseCreatorFileFinder {
 
     private void closeFileOrFailIfNotFound(String filename, InputStream fileInputStream) {
 	if (fileInputStream == null) {
-	    throw new ProxyDelegateQuietException(filename + " not found");
+	    throw new ProxyDelegateException(filename + " not found");
 	} else {
 	    closeQuietly(fileInputStream);
 	}

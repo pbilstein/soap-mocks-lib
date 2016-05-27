@@ -98,7 +98,7 @@ public final class Response {
 			responseIdentifier != null ? responseIdentifier
 				.getDefaultResponse() : null, requestIdentifier);
 	if (filename == null) {
-	    throw new ProxyDelegateQuietException("No response file found");
+	    throw new ProxyDelegateException("No response file found");
 	}
 	return responseFile.using(filename, responseIdentifier,
 		classForResponseType);

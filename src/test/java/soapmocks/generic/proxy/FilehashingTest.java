@@ -33,6 +33,7 @@ public class FilehashingTest {
     String xml1WithSessionNS = "<xml xmlns:ns=\"http://www.namespace.de/\"><ns:data>blah</ns:data><ns:session>$01</ns:session></xml>";
     String xml2 = "<xml><data>blah2</data></xml>";
     String xml3Like1ButFormatted = "<xml>\n\r<data>\n\rblah</data></xml>";
+    String noXml = "uiiiiiiiiii";
     
     byte[] firstXml;
     byte[] secondXml;
@@ -104,6 +105,14 @@ public class FilehashingTest {
 	firstXml = xml1NoSessionNS.getBytes();
 	secondXml = xml1WithSessionNS.getBytes();
 	excludes = new String[]{"session"};
+	runHashing();
+	assertEquals(hashResult1, hashResult2);
+    }
+    
+    @Test
+    public void assureThatNoXmlWorks() {
+    	firstXml = noXml.getBytes();
+	secondXml = noXml.getBytes();
 	runHashing();
 	assertEquals(hashResult1, hashResult2);
     }

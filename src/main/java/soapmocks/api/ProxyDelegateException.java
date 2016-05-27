@@ -15,9 +15,6 @@ limitations under the License.
  */
 package soapmocks.api;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 import javax.xml.ws.ProtocolException;
 
 import soapmocks.generic.logging.Log;
@@ -28,33 +25,21 @@ import soapmocks.generic.logging.LogFactory;
  * or other things go wrong. Sets Proxy delegation on creation.
  */
 // ProtocolException because it is logged as debug in jaxws-rt
-public final class ProxyDelegateQuietException extends ProtocolException {
+public final class ProxyDelegateException extends ProtocolException {
 
-    private static final Log LOG = LogFactory.create(ProxyDelegateQuietException.class);
+    private static final Log LOG = LogFactory.create(ProxyDelegateException.class);
 
     private static final long serialVersionUID = 1L;
 
-    public ProxyDelegateQuietException(Exception e) {
+    public ProxyDelegateException(Exception e) {
 	super(e.getMessage());
 	ProxyDelegator.toProxy();
     }
 
-    public ProxyDelegateQuietException(String message) {
+    public ProxyDelegateException(String message) {
 	super(message);
 	LOG.info(message);
 	ProxyDelegator.toProxy();
-    }
-
-    @Override
-    public void printStackTrace() {
-    }
-
-    @Override
-    public void printStackTrace(PrintStream s) {
-    }
-
-    @Override
-    public void printStackTrace(PrintWriter s) {
     }
 
 }

@@ -17,6 +17,7 @@ package soapmocks.generic.proxy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
@@ -42,7 +43,7 @@ final class ProxyPostHandler {
     ProxyPostHandler(ProxyUrl proxyUrl) {
 	this.proxyUrl = proxyUrl;
     }
-    
+
     long doPostInternal(String uri, HttpServletRequest req,
 	    HttpServletResponse resp) throws IOException {
 	long count = COUNTER.incrementAndGet();
@@ -51,12 +52,12 @@ final class ProxyPostHandler {
 
 	long time = System.currentTimeMillis();
 	ProxyResult proxyResult = sendPost(proxyUrl.proxyUrl(uri),
-		new ProxyRequestHeaderCopier().mapHeaderFromRequest(req), requestString);
+		new ProxyRequestHeaderCopier().mapHeaderFromRequest(req),
+		requestString);
 	time = System.currentTimeMillis() - time;
 
-	LOG.out("RESP-" + count + ": "
-		+ new String(proxyResult.bodyDeflated));
-	
+	LOG.out("RESP-" + count + ": " + new String(proxyResult.bodyDeflated));
+
 	new ProxyResponseHeaderCopier().copyHeaderToResponse(resp, proxyResult);
 	resp.setStatus(proxyResult.responseCode);
 	IOUtils.write(proxyResult.body, resp.getOutputStream());
@@ -67,16 +68,20 @@ final class ProxyPostHandler {
     private ProxyResult sendPost(String url, Map<String, String> reqHeader,
 	    byte[] body) {
 	try {
-	    final HttpURLConnection connection = (HttpURLConnection) new URL(url)
-		    .openConnection();
+	    final HttpURLConnection connection = (HttpURLConnection) new URL(
+		    url).openConnection();
 	    prepareRequest(reqHeader, body, connection);
 	    final int responseCode = connection.getResponseCode();
 
-	    byte[] response = IOUtils.toByteArray(connection.getInputStream());
+	    InputStream inputStream = connection.getErrorStream();
+	    if (inputStream == null) {
+		inputStream = connection.getInputStream();
+	    }
+	    byte[] response = IOUtils.toByteArray(inputStream);
 
-	    ProxyResult proxyResult = createProxyResult(connection, responseCode,
-		    response);
-	    
+	    ProxyResult proxyResult = createProxyResult(connection,
+		    responseCode, response);
+
 	    return proxyResult;
 	} catch (Exception e) {
 	    throw new RuntimeException(e);
@@ -89,8 +94,7 @@ final class ProxyPostHandler {
 	connection.setDoOutput(true);
 	connection.setRequestMethod("POST");
 	for (final Entry<String, String> header : reqHeader.entrySet()) {
-	connection.setRequestProperty(header.getKey(),
-		header.getValue());
+	    connection.setRequestProperty(header.getKey(), header.getValue());
 	}
 	final OutputStream outputStream = connection.getOutputStream();
 	IOUtils.write(body, outputStream);
@@ -104,10 +108,14 @@ final class ProxyPostHandler {
 	proxyResult.responseCode = responseCode;
 	proxyResult.header = connection.getHeaderFields();
 
-	if(proxyResult.header !=null && proxyResult.header.containsKey("Content-Encoding") && proxyResult.header.get("Content-Encoding").get(0).equals("gzip")) {
-	proxyResult.bodyDeflated = IOUtils.toByteArray(new GZIPInputStream(new ByteArrayInputStream(response)));
+	if (proxyResult.header != null
+		&& proxyResult.header.containsKey("Content-Encoding")
+		&& proxyResult.header.get("Content-Encoding").get(0)
+			.equals("gzip")) {
+	    proxyResult.bodyDeflated = IOUtils.toByteArray(new GZIPInputStream(
+		    new ByteArrayInputStream(response)));
 	} else {
-	proxyResult.bodyDeflated = response;
+	    proxyResult.bodyDeflated = response;
 	}
 	proxyResult.body = response;
 	return proxyResult;

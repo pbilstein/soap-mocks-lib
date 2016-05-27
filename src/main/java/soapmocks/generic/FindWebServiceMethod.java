@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import javax.jws.WebService;
 
 import soapmocks.api.Constants;
-import soapmocks.api.ProxyDelegateQuietException;
+import soapmocks.api.ProxyDelegateException;
 
 public class FindWebServiceMethod {
 
@@ -44,7 +44,7 @@ public class FindWebServiceMethod {
 	    }
     	}
 	if(methodName==null) {
-	    throw new ProxyDelegateQuietException("Webservice method not found.");
+	    throw new ProxyDelegateException("Webservice method not found.");
 	}
 	return methodName;
     }

@@ -108,7 +108,7 @@ public class ResponseFile {
 	    return jaxbElement.getValue();
 	} catch (Exception e) {
 	    ProxyDelegator.toProxy();
-	    throw new ProxyDelegateQuietException(e);
+	    throw new ProxyDelegateException(e);
 	}
     }
 
@@ -130,13 +130,13 @@ public class ResponseFile {
 
     private void throwExceptionIfNotFound(String xmlfile, String fromElement, boolean found) {
 	if (!found) {
-	    throw new ProxyDelegateQuietException(fromElement + " element not found in " + xmlfile);
+	    throw new ProxyDelegateException(fromElement + " element not found in " + xmlfile);
 	}
     }
 
     private void failIfStreamNotFound(String file, InputStream fileInputStream) throws FileNotFoundException {
 	if (fileInputStream == null) {
-	    throw new ProxyDelegateQuietException(file + " not found.");
+	    throw new ProxyDelegateException(file + " not found.");
 	}
     }
 
