@@ -15,6 +15,9 @@ limitations under the License.
  */
 package soapmocks.api;
 
+import java.util.Arrays;
+import java.util.List;
+
 import soapmocks.generic.proxy.ProxyServiceIdentifier;
 
 /**
@@ -73,8 +76,21 @@ public final class ProxyDelegator {
      */
     public static void serviceIdentifier(RequestIdentifier requestIdentifier, ResponseIdentifier responseIdentifier) {
 	ProxyServiceIdentifier proxyServiceIdentifier = new ProxyServiceIdentifier(requestIdentifier, responseIdentifier);
+	checkForceNoJaxWsMockForMethod(requestIdentifier);
 	SERVICE_IDENTIFIER.set(proxyServiceIdentifier);
 	HAS_SERVICE_IDENTIFIER.set(true);
+    }
+
+    private static void checkForceNoJaxWsMockForMethod(
+	    RequestIdentifier requestIdentifier) {
+	String forceNoMockMethodsWithComma = System.getProperty(Constants.SOAPMOCKS_JAXWS_NOMOCK_METHODS_FORCE);
+	if(forceNoMockMethodsWithComma == null || forceNoMockMethodsWithComma.isEmpty()) {
+	    return;
+	}
+	List<String> forceNoMockMethods = Arrays.asList(forceNoMockMethodsWithComma.split(","));
+	if(forceNoMockMethods.contains(requestIdentifier.getMethod())) {
+	    toProxy();
+	}
     }
 
     /**
