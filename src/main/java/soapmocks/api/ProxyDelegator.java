@@ -18,12 +18,16 @@ package soapmocks.api;
 import java.util.Arrays;
 import java.util.List;
 
+import soapmocks.generic.logging.Log;
+import soapmocks.generic.logging.LogFactory;
 import soapmocks.generic.proxy.ProxyServiceIdentifier;
 
 /**
  * A Thread-Local that ensures correct handling of proxy requests.
  */
 public final class ProxyDelegator {
+    
+    private static final Log LOG = LogFactory.create(ProxyDelegator.class);
 
     private static final ThreadLocal<Boolean> IS_DELEGATED = new ThreadLocal<>();
     private static final ThreadLocal<ProxyServiceIdentifier> SERVICE_IDENTIFIER = new ThreadLocal<>();
@@ -90,6 +94,7 @@ public final class ProxyDelegator {
 	List<String> forceNoMockMethods = Arrays.asList(forceNoMockMethodsWithComma.split(","));
 	if(forceNoMockMethods.contains(requestIdentifier.getMethod())) {
 	    toProxy();
+	    LOG.info("Forced proxy for jaxws mock method " + requestIdentifier.getMethod() + " by system property " + Constants.SOAPMOCKS_JAXWS_NOMOCK_METHODS_FORCE);
 	}
     }
 
