@@ -15,11 +15,9 @@ limitations under the License.
  */
 package soapmocks.generic;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-
-import soapmocks.generic.SafeFilename;
 
 public class TestSafeFilename {
 

@@ -26,7 +26,7 @@ import soapmocks.generic.proxy.ProxyServiceIdentifier;
  * A Thread-Local that ensures correct handling of proxy requests.
  */
 public final class ProxyDelegator {
-    
+
     private static final Log LOG = LogFactory.create(ProxyDelegator.class);
 
     private static final ThreadLocal<Boolean> IS_DELEGATED = new ThreadLocal<>();
@@ -64,7 +64,8 @@ public final class ProxyDelegator {
      * @param {@link ResponseIdentifier} responseIdentifier to be used for
      *        element excludes on hash creation.
      */
-    public static void toProxy(RequestIdentifier requestIdentifier, ResponseIdentifier responseIdentifier) {
+    public static void toProxy(RequestIdentifier requestIdentifier,
+	    ResponseIdentifier responseIdentifier) {
 	serviceIdentifier(requestIdentifier, responseIdentifier);
 	toProxy();
     }
@@ -78,24 +79,13 @@ public final class ProxyDelegator {
      *            to identify elements in response hash creation and response
      *            object creation
      */
-    public static void serviceIdentifier(RequestIdentifier requestIdentifier, ResponseIdentifier responseIdentifier) {
-	ProxyServiceIdentifier proxyServiceIdentifier = new ProxyServiceIdentifier(requestIdentifier, responseIdentifier);
+    public static void serviceIdentifier(RequestIdentifier requestIdentifier,
+	    ResponseIdentifier responseIdentifier) {
+	ProxyServiceIdentifier proxyServiceIdentifier = new ProxyServiceIdentifier(
+		requestIdentifier, responseIdentifier);
 	checkForceNoJaxWsMockForMethod(requestIdentifier);
 	SERVICE_IDENTIFIER.set(proxyServiceIdentifier);
 	HAS_SERVICE_IDENTIFIER.set(true);
-    }
-
-    private static void checkForceNoJaxWsMockForMethod(
-	    RequestIdentifier requestIdentifier) {
-	String forceNoMockMethodsWithComma = System.getProperty(Constants.SOAPMOCKS_JAXWS_NOMOCK_METHODS_FORCE);
-	if(forceNoMockMethodsWithComma == null || forceNoMockMethodsWithComma.isEmpty()) {
-	    return;
-	}
-	List<String> forceNoMockMethods = Arrays.asList(forceNoMockMethodsWithComma.split(","));
-	if(forceNoMockMethods.contains(requestIdentifier.getMethod())) {
-	    toProxy();
-	    LOG.info("Forced proxy for jaxws mock method " + requestIdentifier.getMethod() + " by system property " + Constants.SOAPMOCKS_JAXWS_NOMOCK_METHODS_FORCE);
-	}
     }
 
     /**
@@ -146,6 +136,24 @@ public final class ProxyDelegator {
 	reset();
 	SERVICE_IDENTIFIER.remove();
 	HAS_SERVICE_IDENTIFIER.remove();
+    }
+
+    private static void checkForceNoJaxWsMockForMethod(
+	    RequestIdentifier requestIdentifier) {
+	String forceNoMockMethodsWithComma = System
+		.getProperty(Constants.SOAPMOCKS_JAXWS_NOMOCK_METHODS_FORCE);
+	if (forceNoMockMethodsWithComma == null
+		|| forceNoMockMethodsWithComma.isEmpty()) {
+	    return;
+	}
+	List<String> forceNoMockMethods = Arrays
+		.asList(forceNoMockMethodsWithComma.split(","));
+	if (forceNoMockMethods.contains(requestIdentifier.getMethod())) {
+	    toProxy();
+	    LOG.info("Forced proxy for jaxws mock method "
+		    + requestIdentifier.getMethod() + " by system property "
+		    + Constants.SOAPMOCKS_JAXWS_NOMOCK_METHODS_FORCE);
+	}
     }
 
 }
