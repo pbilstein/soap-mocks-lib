@@ -66,6 +66,8 @@ public final class StaticFileConfig {
 	    if (genericSoapDirResource == null) {
 		SoapMocksStartup.LOG.out("No static soap files found.");
 		return Collections.emptyList();
+	    } else {
+		staticFilesDir = genericSoapDirResource.getFile();
 	    }
 	}
 	File genericSoapDirFile = new File(staticFilesDir);
