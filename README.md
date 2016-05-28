@@ -5,7 +5,7 @@ A jar that can be put into a war to easyly create an application for SOAP servic
 
 * Static file mocking configuration via properties, no code needed
   * Simple default response xml
-  * Conditional response xml based in request contains
+  * Conditional response xml based on request contains
 * Use @Webservice annotated services and implement mocks via powerful soapmocks.api
   * Identify fitting response by simple RequestIdentifier API
   * Supports automatic response recording via Proxy API
