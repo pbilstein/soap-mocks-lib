@@ -21,6 +21,12 @@ public final class SafeFilename {
     
     public String make(String fileName)
     {
+	fileName = fileName.replaceAll("ä", "ae");
+	fileName = fileName.replaceAll("ö", "oe");
+	fileName = fileName.replaceAll("ü", "ue");
+	fileName = fileName.replaceAll("Ä", "AE");
+	fileName = fileName.replaceAll("Ö", "OE");
+	fileName = fileName.replaceAll("Ü", "UE");
         char[] newFileName = fileName.toCharArray();
         for (int i = 0; i < newFileName.length; i++)
         {

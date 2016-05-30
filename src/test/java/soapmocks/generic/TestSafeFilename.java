@@ -32,6 +32,13 @@ public class TestSafeFilename {
 	expectedResult = "getTest-blah-some_param.xml";
 	runMakeAndAssertResult();
     }
+    
+    @Test
+    public void assureThatUmlautsAreReplaced() {
+	filename = "getTästöüÄÜÖ.xml";
+	expectedResult = "getTaestoeueAEUEOE.xml";
+	runMakeAndAssertResult();
+    }
 
     private void runMakeAndAssertResult() {
 	result = safeFilename.make(filename);
