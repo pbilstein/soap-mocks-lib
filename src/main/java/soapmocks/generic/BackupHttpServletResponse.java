@@ -271,6 +271,7 @@ public final class BackupHttpServletResponse implements HttpServletResponse {
 		new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),
 		delegate.getOutputStream());
 	delegate.setStatus(statuscode);
+	delegate.flushBuffer();
     }
 
     public String getResponse() {
