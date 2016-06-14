@@ -29,6 +29,7 @@ import soapmocks.api.ProxyDelegator;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
 import soapmocks.generic.proxy.ProxyHandler;
+import soapmocks.generic.proxy.ProxyHandlerResult;
 
 public abstract class SoapMock extends
 	com.sun.xml.ws.transport.http.servlet.WSServlet {
@@ -120,10 +121,15 @@ public abstract class SoapMock extends
 	} else {
 	    if (proxyHandler.isProxy(uri)) {
 		LOG.out("Using Proxy now...");
-		long time = proxyHandler.doPost(uri, req, resp);
+		ProxyHandlerResult proxyHandlerResult = proxyHandler.doPost(uri, req, resp);
 		resp.commit();
-		LOG.out("Proxy Response sent (took " + time + "ms). "
+		if(proxyHandlerResult.isSuccessful()) {
+		    LOG.out("Proxy Response sent (took " + proxyHandlerResult.getTookTimeMillis() + "ms). "
 			+ mockPercentageLog.logProxy() + "\n");
+		} else {
+		    LOG.out("Proxy Response failed, sending mocked fault (took " + proxyHandlerResult.getTookTimeMillis() + "ms). "
+				+ mockPercentageLog.logProxyFailed() + "\n");
+		}
 	    } else {
 		String additionalMessage = "No mock or proxy found.";
 		sendFault(resp, additionalMessage);
@@ -144,22 +150,13 @@ public abstract class SoapMock extends
 	if (additionalMessage != null) {
 	    message += " " + additionalMessage;
 	}
-	String fault = "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-		+ "	<SOAP-ENV:Header/>\n"
-		+ "	<SOAP-ENV:Body>\n"
-		+ "		<SOAP-ENV:Fault>\n"
-		+ "			<faultcode>SOAP-ENV:Server</faultcode>\n"
-		+ "			<faultstring>"
-		+ message
-		+ "</faultstring>\n"
-		+ "			<faultactor>http://soapmocks.de/mocks</faultactor>\n"
-		+ "			<detail></detail>\n"
-		+ "		</SOAP-ENV:Fault>\n"
-		+ "	</SOAP-ENV:Body>\n" + "</SOAP-ENV:Envelope>";
+	String fault = new FaultCreator().createFault(message);
 	resp.setStatus(500);
 	IOUtils.copy(new ByteArrayInputStream(fault.getBytes()),
 		resp.getOutputStream());
     }
+
+    
 
     private void send(HttpServletResponse resp, InputStream soapResponse)
 	    throws IOException {

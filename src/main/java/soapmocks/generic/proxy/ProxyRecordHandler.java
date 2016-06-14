@@ -29,6 +29,10 @@ final class ProxyRecordHandler {
     private static final Log LOG = LogFactory.create(ProxyRecordHandler.class);
 
     void handleProxyRecord(ProxyResult proxyResult) throws IOException {
+	if(proxyResult.isGeneratedFault) {
+	    LOG.out("No proxy record for generated Fault");
+	    return;
+	}
 	if (ProxyDelegator.hasServiceIdentifier()) {
 	    ProxyServiceIdentifier serviceIdentifier = ProxyDelegator
 		    .getServiceIdentifier();

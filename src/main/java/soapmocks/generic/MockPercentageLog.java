@@ -20,21 +20,27 @@ import java.util.concurrent.atomic.AtomicLong;
 final class MockPercentageLog {
 
     private static final AtomicLong COUNTER_PROXY = new AtomicLong();
+    private static final AtomicLong COUNTER_PROXY_FAILED = new AtomicLong();
     private static final AtomicLong COUNTER_MOCK = new AtomicLong();
 
     String logMock() {
 	return logPercentage(COUNTER_MOCK.incrementAndGet(),
-		COUNTER_PROXY.get());
+		COUNTER_PROXY.get(), COUNTER_PROXY_FAILED.get());
     }
 
     String logProxy() {
 	return logPercentage(COUNTER_MOCK.get(),
-		COUNTER_PROXY.incrementAndGet());
+		COUNTER_PROXY.incrementAndGet(), COUNTER_PROXY_FAILED.get());
     }
 
-    String logPercentage(long mocks, long proxy) {
-	double percent = proxy == 0 ? 100 : (mocks * 100) / (proxy + mocks);
+    String logProxyFailed() {
+	return logPercentage(COUNTER_MOCK.get(), COUNTER_PROXY.get(),
+		COUNTER_PROXY_FAILED.incrementAndGet());
+    }
+
+    String logPercentage(long mocks, long proxy, long proxyFailed) {
+	double percent = proxy == 0 && proxyFailed == 0 ? 100 : (mocks * 100) / (proxy + proxyFailed + mocks);
 	return "Currently " + percent + "% MOCKS (Mocks: " + mocks
-		+ " <> Proxy: " + proxy + ")";
+		+ " <> Proxy: " + proxy + " [" + proxyFailed + " failed])";
     }
 }

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
+import soapmocks.generic.FaultCreator;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
 
@@ -44,7 +45,7 @@ final class ProxyPostHandler {
 	this.proxyUrl = proxyUrl;
     }
 
-    long doPostInternal(String uri, HttpServletRequest req,
+    ProxyHandlerResult doPostInternal(String uri, HttpServletRequest req,
 	    HttpServletResponse resp) throws IOException {
 	long count = COUNTER.incrementAndGet();
 	byte[] requestString = IOUtils.toByteArray(req.getInputStream());
@@ -57,12 +58,11 @@ final class ProxyPostHandler {
 	time = System.currentTimeMillis() - time;
 
 	LOG.out("RESP-" + count + ": " + new String(proxyResult.bodyDeflated));
-
 	new ProxyResponseHeaderCopier().copyHeaderToResponse(resp, proxyResult);
 	resp.setStatus(proxyResult.responseCode);
 	IOUtils.write(proxyResult.body, resp.getOutputStream());
 	new ProxyRecordHandler().handleProxyRecord(proxyResult);
-	return time;
+	return new ProxyHandlerResult(time, !proxyResult.isGeneratedFault);
     }
 
     private ProxyResult sendPost(String url, Map<String, String> reqHeader,
@@ -84,7 +84,14 @@ final class ProxyPostHandler {
 
 	    return proxyResult;
 	} catch (Exception e) {
-	    throw new RuntimeException(e);
+	    String message = "Error calling target system as proxy: " + e.getMessage();
+	    LOG.warn(message);
+	    ProxyResult proxyResult = new ProxyResult();
+	    proxyResult.responseCode = 500;
+	    proxyResult.body = new FaultCreator().createFault(message).getBytes();
+	    proxyResult.bodyDeflated = proxyResult.body;
+	    proxyResult.isGeneratedFault = true;
+	    return proxyResult;
 	}
     }
 

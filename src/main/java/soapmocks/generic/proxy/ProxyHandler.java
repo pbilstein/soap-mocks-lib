@@ -27,9 +27,9 @@ public final class ProxyHandler {
     private ProxyUrl proxyUrl = new ProxyUrl();
 
     /**
-     * @return Time in millis that the proxy call took
+     * @return ProxyHandlerResult
      */
-    public long doPost(String uri, HttpServletRequest req,
+    public ProxyHandlerResult doPost(String uri, HttpServletRequest req,
 	    HttpServletResponse resp) throws IOException {
 	ProxyDelegator.reset();
 	return new ProxyPostHandler(proxyUrl).doPostInternal(uri, req, resp);

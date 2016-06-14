@@ -15,14 +15,24 @@ limitations under the License.
  */
 package soapmocks.generic.proxy;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+/**
+ * Containing all necessary information to be used after proxy handling.
+ */
+public final class ProxyHandlerResult {
 
-final class ProxyResult {
-    Map<String, List<String>> header = new HashMap<>();
-    int responseCode;
-    public byte[] bodyDeflated;
-    byte[] body;
-    boolean isGeneratedFault = false;
+    private final long tookTimeMillis;
+    private final boolean successful;
+    
+    public ProxyHandlerResult(long tookTimeMillis, boolean successful) {
+	this.tookTimeMillis = tookTimeMillis;
+	this.successful = successful;
+    }
+
+    public long getTookTimeMillis() {
+	return tookTimeMillis;
+    }
+
+    public boolean isSuccessful() {
+	return successful;
+    }
 }
