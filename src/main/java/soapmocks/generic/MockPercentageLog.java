@@ -40,7 +40,7 @@ final class MockPercentageLog {
 
     String logPercentage(long mocks, long proxy, long proxyFailed) {
 	double percent = proxy == 0 && proxyFailed == 0 ? 100 : (mocks * 100) / (proxy + proxyFailed + mocks);
-	return "Currently " + percent + "% MOCKS (Mocks: " + mocks
-		+ " <> Proxy: " + proxy + " [" + proxyFailed + " failed])";
+	return "Currently " + percent + "% MOCKS [Mocks: " + mocks
+		+ " <> Proxy: " + proxy + " (" + proxyFailed + " failed)"+"]";
     }
 }

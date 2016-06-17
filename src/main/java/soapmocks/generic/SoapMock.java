@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
+import soapmocks.api.Constants;
 import soapmocks.api.ProxyDelegator;
 import soapmocks.generic.logging.Log;
 import soapmocks.generic.logging.LogFactory;
@@ -119,32 +120,40 @@ public abstract class SoapMock extends
 	    LOG.out("MOCKED (JaxWS) Response sent. "
 		    + mockPercentageLog.logMock() + "\n");
 	} else {
-	    if (proxyHandler.isProxy(uri)) {
+	    if (proxyHandler.isProxy(uri) && !isProxyDisabled()) {
 		LOG.out("Using Proxy now...");
 		ProxyHandlerResult proxyHandlerResult = proxyHandler.doPost(uri, req, resp);
 		resp.commit();
 		if(proxyHandlerResult.isSuccessful()) {
 		    LOG.out("Proxy Response sent (took " + proxyHandlerResult.getTookTimeMillis() + "ms). "
-			+ mockPercentageLog.logProxy() + "\n");
+			    + mockPercentageLog.logProxy() + "\n");
 		} else {
 		    LOG.out("Proxy Response failed, sending mocked fault (took " + proxyHandlerResult.getTookTimeMillis() + "ms). "
-				+ mockPercentageLog.logProxyFailed() + "\n");
+			    + mockPercentageLog.logProxyFailed() + "\n");
 		}
+	    } else if(proxyHandler.isProxy(uri) && isProxyDisabled()) {
+		String additionalMessage = "Proxy functionality is disabled here.";
+		sendFault(resp, additionalMessage);
+		LOG.out("Fault sent. " + additionalMessage + " "
+			+ mockPercentageLog.logProxyFailed() + " \n");
 	    } else {
 		String additionalMessage = "No mock or proxy found.";
 		sendFault(resp, additionalMessage);
-		resp.commit();
 		LOG.out("Fault sent. " + additionalMessage + " "
 			+ mockPercentageLog.logMock() + " \n");
 	    }
 	}
     }
 
-    private void sendFault(HttpServletResponse resp) throws IOException {
+    private boolean isProxyDisabled() {
+	return Boolean.getBoolean(Constants.SOAPMOCKS_DISABLE_PROXY_SYSTEM_PROP);
+    }
+
+    private void sendFault(BackupHttpServletResponse resp) throws IOException {
 	sendFault(resp, null);
     }
 
-    private void sendFault(HttpServletResponse resp, String additionalMessage)
+    private void sendFault(BackupHttpServletResponse resp, String additionalMessage)
 	    throws IOException {
 	String message = "SOAPMOCKS did not find a fitting response for the given request.";
 	if (additionalMessage != null) {
@@ -154,6 +163,7 @@ public abstract class SoapMock extends
 	resp.setStatus(500);
 	IOUtils.copy(new ByteArrayInputStream(fault.getBytes()),
 		resp.getOutputStream());
+	resp.commit();
     }
 
     
