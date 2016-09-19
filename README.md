@@ -10,10 +10,11 @@ A jar that can be put into a war to easily create an application for SOAP servic
   * Identify fitting response by simple RequestIdentifier API
   * Supports automatic response recording via Proxy API
 
-
+```xml
 <!-- https://mvnrepository.com/artifact/com.github.pbilstein.infrastructure-mocks/soap-mocks-lib -->
 <dependency>
     <groupId>com.github.pbilstein.infrastructure-mocks</groupId>
     <artifactId>soap-mocks-lib</artifactId>
     <version>0.17</version>
 </dependency>
+```
